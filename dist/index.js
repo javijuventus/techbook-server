@@ -25,7 +25,7 @@ server.app.use('/user', usuario_routes_1.default);
 server.app.use('/phones', phone_routes_1.default);
 server.app.use('/ratings', ratings_routes_1.default);
 //conectar db
-mongoose_1.default.connect('mongodb://techbookAdmin:Techbook!_admin@techbook-shard-00-00-jxncs.mongodb.net:27017,techbook-shard-00-01-jxncs.mongodb.net:27017,techbook-shard-00-02-jxncs.mongodb.net:27017/test?ssl=true&replicaSet=Techbook-shard-0&authSource=admin&retryWrites=true', { useNewUrlParser: true, useCreateIndex: true }, (function (err) {
+mongoose_1.default.connect('mongodb+srv://techbookAdmin:Techbook!_admin@techbook-jxncs.mongodb.net/test?retryWrites=true', { useNewUrlParser: true, useCreateIndex: true }, (function (err) {
     if (err)
         throw err;
     console.log('Base de datos online');
