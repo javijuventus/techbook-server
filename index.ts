@@ -24,6 +24,7 @@ server.app.use('/user', userRoutes);
 server.app.use('/phones', phonesRoutes);
 server.app.use('/ratings', ratingsRoutes);
 
+
 //conectar db
 mongoose.connect('mongodb://techbookAdmin:Techbook!_admin@techbook-shard-00-00-jxncs.mongodb.net:27017,techbook-shard-00-01-jxncs.mongodb.net:27017,techbook-shard-00-02-jxncs.mongodb.net:27017/test?ssl=true&replicaSet=Techbook-shard-0&authSource=admin&retryWrites=true'
     , { useNewUrlParser: true, useCreateIndex: true }, ((err: any) => {
@@ -50,6 +51,6 @@ client.connect(err => {
 
 server.start(() => {
 
-    console.log(`Servidor corriendo en puerto ${server.port}`);
+    console.log(`Servidor corriendo en puerto ${server.app.get('port')}`);
 
 })

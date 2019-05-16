@@ -40,5 +40,5 @@ client.connect(err => {
 });*/
 //Levantar express
 server.start(function () {
-    console.log("Servidor corriendo en puerto " + server.port);
+    console.log("Servidor corriendo en puerto " + server.app.get('port'));
 });
