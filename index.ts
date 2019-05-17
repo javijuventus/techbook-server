@@ -7,8 +7,6 @@ import fileUpload from 'express-fileupload';
 import cors from 'cors';
 import ratingsRoutes from './routes/ratings-routes';
 require('dotenv/config');
-const MongoClient = require('mongodb').MongoClient;
-
 
 const server = new Server();
 
@@ -28,21 +26,21 @@ server.app.use('/ratings', ratingsRoutes);
 
 
 //conectar db
-/* mongoose.connect('mongodb://techbookAdmin:Techbook!_admin@techbook-shard-00-00-jxncs.mongodb.net:27017,techbook-shard-00-01-jxncs.mongodb.net:27017,techbook-shard-00-02-jxncs.mongodb.net:27017/test?ssl=true&replicaSet=Techbook-shard-0&authSource=admin&retryWrites=true'
+mongoose.connect('mongodb://techbook:techbook123@techbook-shard-00-00-jxncs.mongodb.net:27017,techbook-shard-00-01-jxncs.mongodb.net:27017,techbook-shard-00-02-jxncs.mongodb.net:27017/test?ssl=true&replicaSet=Techbook-shard-0&authSource=admin&retryWrites=true'
     , { useNewUrlParser: true, useCreateIndex: true }, ((err: any) => {
         if (err) throw err;
         console.log('Base de datos online');
-    })); */
+    }));
 
 
-const uri = "mongodb+srv://techbookAdmin:Techbook!_admin@techbook-jxncs.mongodb.net/test?retryWrites=true";
+/*const MongoClient = require('mongodb').MongoClient;
+const uri = "mongodb+srv://techbookAdmin:<password>@techbook-jxncs.mongodb.net/test?retryWrites=true";
 const client = new MongoClient(uri, { useNewUrlParser: true });
 client.connect(err => {
-    if(err) throw err;
-  const collection = client.db("techbook").collection("phones");
+  const collection = client.db("test").collection("devices");
   // perform actions on the collection object
   client.close();
-});
+});*/
 
 
 
