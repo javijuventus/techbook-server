@@ -42,10 +42,6 @@ client.connect(err => {
   client.close();
 });*/
 
-
-
-
-
 //Levantar express
 
 server.start(() => {
