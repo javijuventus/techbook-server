@@ -9,7 +9,7 @@ export const verificaToken = ( req: Request, res: Response, next: NextFunction) 
 
     const userToken = req.get('x-token') || '';
 
-    Token.comprobarToen( userToken ).then (  (decoded: any) => {
+    Token.comprobarToken( userToken ).then (  (decoded: any) => {
         req.usuario = decoded.usuario;
         next();
     }).catch( err => {

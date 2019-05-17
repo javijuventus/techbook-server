@@ -13,7 +13,7 @@ var Token = /** @class */ (function () {
             usuario: payload
         }, this.seed, { expiresIn: this.caducidad });
     };
-    Token.comprobarToen = function (userToken) {
+    Token.comprobarToken = function (userToken) {
         var _this = this;
         return new Promise(function (resolve, reject) {
             jsonwebtoken_1.default.verify(userToken, _this.seed, function (err, decoded) {

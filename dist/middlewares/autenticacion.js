@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var token_1 = __importDefault(require("../classes/token"));
 exports.verificaToken = function (req, res, next) {
     var userToken = req.get('x-token') || '';
-    token_1.default.comprobarToen(userToken).then(function (decoded) {
+    token_1.default.comprobarToken(userToken).then(function (decoded) {
         req.usuario = decoded.usuario;
         next();
     }).catch(function (err) {

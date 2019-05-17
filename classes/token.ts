@@ -19,7 +19,7 @@ export default class Token {
         }, this.seed, { expiresIn: this.caducidad });
     }
 
-    static comprobarToen(userToken: string) {
+    static comprobarToken(userToken: string) {
 
         return new Promise((resolve, reject) => {
 
