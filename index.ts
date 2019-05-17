@@ -23,7 +23,7 @@ server.app.use(cors({ origin: true, credentials: true }));
 server.app.use('/user', userRoutes);
 server.app.use('/phones', phonesRoutes);
 server.app.use('/ratings', ratingsRoutes);
-server.app.get('/', (req,res) => res.send('Bienvenido a la Api rest'));
+server.app.use('/', (req,res) => res.send('Bienvenido a la Api rest'));
 
 
 //conectar db
