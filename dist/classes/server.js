@@ -8,6 +8,7 @@ var Server = /** @class */ (function () {
     function Server() {
         this.app = express_1.default();
         this.app.set('port', process.env.PORT || 3000);
+        this.app.get('/', function (req, res) { return res.send('Bienvenido a la Api rest'); });
     }
     Server.prototype.start = function (callback) {
         this.app.listen(this.app.get('port'), callback);

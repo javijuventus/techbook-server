@@ -24,6 +24,7 @@ server.app.use(cors_1.default({ origin: true, credentials: true }));
 server.app.use('/user', usuario_routes_1.default);
 server.app.use('/phones', phone_routes_1.default);
 server.app.use('/ratings', ratings_routes_1.default);
+server.app.use('/', function (req, res) { return res.send('Bienvenido a la Api rest'); });
 //conectar db
 mongoose_1.default.connect('mongodb+srv://techbookAdmin:Techbook!_admin@techbook-jxncs.mongodb.net/test?retryWrites=true', { useNewUrlParser: true, useCreateIndex: true }, (function (err) {
     if (err)
