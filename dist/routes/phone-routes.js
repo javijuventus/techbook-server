@@ -54,14 +54,27 @@ phonesRoutes.get('/', function (req, res) { return __awaiter(_this, void 0, void
                         .skip(skip)
                         .limit(10)
                         .populate('usuario')
-                        .exec()];
+                        .exec().then(function (docs) {
+                        console.log(docs);
+                        if (docs.length >= 0) {
+                            res.status(200).json(docs);
+                            res.json({
+                                ok: true,
+                                pagina: pagina,
+                                phones: phones
+                            });
+                        }
+                        else {
+                            res.status(404);
+                        }
+                    }).catch(function (err) {
+                        console.log(err);
+                        res.status(500).json({
+                            error: err
+                        });
+                    })];
             case 1:
                 phones = _a.sent();
-                res.json({
-                    ok: true,
-                    pagina: pagina,
-                    phones: phones
-                });
                 return [2 /*return*/];
         }
     });

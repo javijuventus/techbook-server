@@ -19,13 +19,25 @@ phonesRoutes.get('/', async (req: Request, res: Response) => {
         .skip(skip)
         .limit(10)
         .populate('usuario')
-        .exec();
-
-    res.json({
-        ok: true,
-        pagina,
-        phones
-    })
+        .exec().then( docs => {
+            console.log(docs);
+            if ( docs.length >= 0) {
+                res.status(200).json(docs);
+                res.json({
+                    ok: true,
+                    pagina,
+                    phones
+                })
+            }else {
+                res.status(404);
+            }
+            
+        }).catch(err => {
+            console.log(err);
+            res.status(500).json({
+                error:err
+            });
+        })
 });
 
 //Obtener Moviles mas likes
