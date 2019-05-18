@@ -124,7 +124,7 @@ ratingsRoutes.get('/aspecto/:phoneId', function (req, res) { return __awaiter(_t
         switch (_a.label) {
             case 0: return [4 /*yield*/, ratings_model_1.Ratings.aggregate([
                     { $match: { phone: ObjectId("" + req.params.phoneId) } },
-                    { $group: { _id: null, average: { $avg: '$val_aspecto' } } }
+                    { $group: { _id: "$marca", average: { $avg: '$val_aspecto' } } }
                 ], function (err, result) {
                     if (err)
                         throw err;

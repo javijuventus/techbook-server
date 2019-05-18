@@ -76,7 +76,7 @@ ratingsRoutes.get('/aspecto/:phoneId', async (req: Request, res: Response) => {
 
     await Ratings.aggregate([
         { $match: { phone: ObjectId(`${req.params.phoneId}`) } },
-        { $group: { _id: null, average: { $avg: '$val_aspecto' } } }
+        { $group: { _id: "$marca", average: { $avg: '$val_aspecto' } } }
     ], function (err: any, result: any) {
         if (err) throw err;
         res.json({
