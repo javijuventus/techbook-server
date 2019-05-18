@@ -19,24 +19,12 @@ phonesRoutes.get('/', async (req: Request, res: Response) => {
         .skip(skip)
         .limit(10)
         .populate('usuario')
-        .exec().then( docs => {
-            console.log(docs);
-            if ( docs.length >= 0) {
-                res.status(200).json(docs);
-                res.json({
-                    ok: true,
-                    pagina,
-                    phones
-                })
-            }else {
-                res.status(404);
-            }
-            
-        }).catch(err => {
-            console.log(err);
-            res.status(500).json({
-                error:err
-            });
+        .exec()
+
+        res.json({
+            ok: true,
+            pagina,
+            phones
         })
 });
 
@@ -99,7 +87,7 @@ phonesRoutes.get('/dislikes', async (req: Request, res: Response) => {
 
 //Crear moviles
 phonesRoutes.post('/', [verificaToken], (req: Request, res: Response) => {
-
+//He puesto el await
     const body = req.body;
 
     Phone.create(body).then(phoneDB => {

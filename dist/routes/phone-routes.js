@@ -54,27 +54,14 @@ phonesRoutes.get('/', function (req, res) { return __awaiter(_this, void 0, void
                         .skip(skip)
                         .limit(10)
                         .populate('usuario')
-                        .exec().then(function (docs) {
-                        console.log(docs);
-                        if (docs.length >= 0) {
-                            res.status(200).json(docs);
-                            res.json({
-                                ok: true,
-                                pagina: pagina,
-                                phones: phones
-                            });
-                        }
-                        else {
-                            res.status(404);
-                        }
-                    }).catch(function (err) {
-                        console.log(err);
-                        res.status(500).json({
-                            error: err
-                        });
-                    })];
+                        .exec()];
             case 1:
                 phones = _a.sent();
+                res.json({
+                    ok: true,
+                    pagina: pagina,
+                    phones: phones
+                });
                 return [2 /*return*/];
         }
     });
@@ -151,6 +138,7 @@ phonesRoutes.get('/dislikes', function (req, res) { return __awaiter(_this, void
 }); });
 //Crear moviles
 phonesRoutes.post('/', [autenticacion_1.verificaToken], function (req, res) {
+    //He puesto el await
     var body = req.body;
     phones_model_1.Phone.create(body).then(function (phoneDB) {
         res.json({

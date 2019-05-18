@@ -21,13 +21,15 @@ ratingsRoutes.get('/', async (req: Request, res: Response) => {
         .limit(10)
         .populate('phone')
         .populate('usuario')
-        .exec();
+        .exec()
 
     res.json({
         ok: true,
         pagina,
         ratings
-    })
+    }).app
+
+    
 });
 
 
