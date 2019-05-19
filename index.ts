@@ -7,6 +7,7 @@ import fileUpload from 'express-fileupload';
 import cors from 'cors';
 import ratingsRoutes from './routes/ratings-routes';
 require('dotenv/config');
+const morgan = require('morgan');
 
 const server = new Server();
 
@@ -17,6 +18,8 @@ server.app.use(bodyParser.json());
 // File Upload
 server.app.use(fileUpload());
 
+server.app.use(morgan("dev"));
+
 //Configuracion del cors
 server.app.use(cors({ origin: true, credentials: true }));
 //Rutas de mi app
@@ -26,17 +29,17 @@ server.app.use('/ratings', ratingsRoutes);
 
 
 //conectar db
-mongoose.connect('mongodb://localhost:27017/techbook'
+/* mongoose.connect('mongodb://localhost:27017/techbook'
     , { useNewUrlParser: true, useCreateIndex: true, }, ((err: any) => {
         if (err) throw err;
         console.log('Base de datos online');
-    }));
+    })); */
 
-/* mongoose.connect('mongodb://techbook:techbook123@techbook-shard-00-00-jxncs.mongodb.net:27017,techbook-shard-00-01-jxncs.mongodb.net:27017,techbook-shard-00-02-jxncs.mongodb.net:27017/techbook?ssl=true&replicaSet=Techbook-shard-0&authSource=admin&retryWrites=true'
+mongoose.connect('mongodb://techbook:techbook123@techbook-shard-00-00-jxncs.mongodb.net:27017,techbook-shard-00-01-jxncs.mongodb.net:27017,techbook-shard-00-02-jxncs.mongodb.net:27017/techbook?ssl=true&replicaSet=Techbook-shard-0&authSource=admin&retryWrites=true'
     , { useNewUrlParser: true, useCreateIndex: true }, ((err: any) => {
         if (err) throw err;
         console.log('Base de datos online');
-    })); */
+    }));
 
 //Levantar express
 
