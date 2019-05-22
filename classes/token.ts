@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-
+var config = require('./config');
 
 
 
@@ -7,15 +7,15 @@ import jwt from 'jsonwebtoken';
 
 export default class Token {
 
-    private static seed: string = 'seed-de-la-app-de-mi-projecto';
+    private static seed: string = config.jwtSecret;
     private static caducidad: string = '30d';
 
     constructor() { }
 
-    static getJwtToken(payload: any): string {
+    static getJwtToken(user: any): string {
 
         return jwt.sign({
-            usuario: payload
+            id: user._id, email: user.email
         }, this.seed, { expiresIn: this.caducidad });
     }
 

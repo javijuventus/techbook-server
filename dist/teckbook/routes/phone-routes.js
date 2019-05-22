@@ -34,17 +34,12 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 var _this = this;
 Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = require("express");
 var autenticacion_1 = require("../middlewares/autenticacion");
 var phones_model_1 = require("../models/phones.model");
-var file_system_1 = __importDefault(require("../classes/file-system"));
 var phonesRoutes = express_1.Router();
-var fileSystem = new file_system_1.default();
 //Obtener Moviles
 phonesRoutes.get('/', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
     var pagina, skip, phones;
@@ -148,7 +143,7 @@ phonesRoutes.post('/', [autenticacion_1.verificaToken], function (req, res) {
     phones_model_1.Phone.create(body).then(function (phoneDB) {
         res.json({
             ok: true,
-            phoneDB: phoneDB
+            phone: phoneDB
         });
     }).catch(function (err) {
         res.json({
@@ -182,32 +177,26 @@ phonesRoutes.get('/:phoneId', function (req, res) { return __awaiter(_this, void
 }); });
 //Delete phone
 phonesRoutes.delete('/:phoneId', [autenticacion_1.verificaToken], function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-    var phoneId, removedPhone, err_4;
+    var removedPhone, err_4;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                phoneId = req.params.phoneId;
-                _a.label = 1;
-            case 1:
-                _a.trys.push([1, 4, , 5]);
+                _a.trys.push([0, 2, , 3]);
                 return [4 /*yield*/, phones_model_1.Phone.deleteOne({
-                        _id: phoneId
+                        _id: req.params.phoneId
                     })];
-            case 2:
+            case 1:
                 removedPhone = _a.sent();
-                return [4 /*yield*/, fileSystem.borrarCapetaMovil(phoneId)];
-            case 3:
-                _a.sent();
                 res.json(removedPhone);
-                return [3 /*break*/, 5];
-            case 4:
+                return [3 /*break*/, 3];
+            case 2:
                 err_4 = _a.sent();
                 res.json({
                     ok: false,
                     message: err_4
                 });
-                return [3 /*break*/, 5];
-            case 5: return [2 /*return*/];
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
         }
     });
 }); });
@@ -246,74 +235,6 @@ phonesRoutes.patch('/:phoneId', [autenticacion_1.verificaToken], function (req, 
                 });
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];
-        }
-    });
-}); });
-//Servicio para subir imagenes
-phonesRoutes.post('/upload/:phoneId', [autenticacion_1.verificaToken], function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-    var file, phoneId;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                if (!req.files) {
-                    return [2 /*return*/, res.status(400).json({
-                            mensaje: 'No se subió ningun archivo'
-                        })];
-                }
-                file = req.files.img;
-                if (!file) {
-                    return [2 /*return*/, res.status(400).json({
-                            mensaje: 'No se subió ningun archivo - image'
-                        })];
-                }
-                if (!file.mimetype.includes('image')) {
-                    return [2 /*return*/, res.status(400).json({
-                            mensaje: 'No se subió ninguna imagen'
-                        })];
-                }
-                phoneId = req.params.phoneId;
-                return [4 /*yield*/, fileSystem.guardarImagenTemporal(file, phoneId)];
-            case 1:
-                _a.sent();
-                res.status(200).json({
-                    ok: true,
-                    file: file.mimetype
-                });
-                return [2 /*return*/];
-        }
-    });
-}); });
-phonesRoutes.patch('/upload/:phoneId', [autenticacion_1.verificaToken], function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-    var body, phoneId, imagenes;
-    return __generator(this, function (_a) {
-        body = req.body;
-        phoneId = req.params.phoneId;
-        imagenes = fileSystem.imagenesDeTempHaciaPhone(phoneId);
-        body.img = imagenes;
-        phones_model_1.Phone.updateOne({ _id: phoneId }, {
-            $set: {
-                img: body.img,
-            }
-        }, function (err, phoneUpdated) {
-            if (err)
-                throw res.json({ ok: false, err: err });
-            res.json({ ok: true, phoneUpdated: phoneUpdated });
-        });
-        return [2 /*return*/];
-    });
-}); });
-phonesRoutes.get('/imagen/:phoneId/:img', [autenticacion_1.verificaToken], function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-    var phoneId, img, pathFoto;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                phoneId = req.params.phoneId;
-                img = req.params.img;
-                return [4 /*yield*/, fileSystem.getFotoMovil(phoneId, img)];
-            case 1:
-                pathFoto = _a.sent();
-                res.sendFile(pathFoto);
-                return [2 /*return*/];
         }
     });
 }); });

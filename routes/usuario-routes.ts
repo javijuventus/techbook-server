@@ -1,13 +1,13 @@
 import { Router, Request, Response } from "express";
-import { Usuario } from "../models/usuario.model";
+import { Usuario } from '../models/usuario.model';
 import bcrypt from 'bcrypt';
 import Token from '../classes/token';
 import { verificaToken } from '../middlewares/autenticacion';
 
 
 
-const userRoutes = Router();
 
+const userRoutes = Router();
 
 //Login
 userRoutes.post('/login', (req: Request, res: Response) => {
@@ -34,15 +34,15 @@ userRoutes.post('/login', (req: Request, res: Response) => {
                 avatar: userDB.avatar
             });
 
-            res.json({
+            res.status(200).json({
                 ok: true,
                 token: tokenUser
             });
 
         } else {
-            res.json({
+            res.status(400).json({
                 ok: false,
-                mensaje: 'Usuario/contraseña no son correctas***'
+                mensaje: 'Usuario/contraseña no son correctas'
             });
         }
 
@@ -53,27 +53,40 @@ userRoutes.post('/login', (req: Request, res: Response) => {
 //Crear un usuario
 userRoutes.post('/create', (req: Request, res: Response) => {
 
-    const user = {
-        nombre: req.body.nombre,
-        email: req.body.email,
-        password: bcrypt.hashSync(req.body.password, 10),
-        avatar: req.body.avatar
+    if (!req.body.email || !req.body.password) {
+        return res.status(400).json({ 'msg': 'Necesitas especificar un nombre de usuario y una contraseña' });
     }
 
-    Usuario.create(user).then(userDB => {
-
-        const tokenUser = Token.getJwtToken({
-            _id: userDB._id,
-            nombre: userDB.nombre,
-            email: userDB.email,
-            avatar: userDB.avatar
-        });
-
-        res.json({
-            ok: true,
-            token: tokenUser
+    Usuario.findOne({ email: req.body.email }, (err, user) => {
+        if (err) {
+            return res.status(400).json({ 'msg': err });
+        }
+        if (user) {
+            return res.status(400).json({ 'msg': 'El usuario ya existe' });
+        }
+        const newUser = {
+            nombre: req.body.nombre,
+            email: req.body.email,
+            password: bcrypt.hashSync(req.body.password, 10),
+            avatar: req.body.avatar
+        }
+        
+        Usuario.create(newUser).then(userDB => {
+    
+            const tokenUser = Token.getJwtToken({
+                _id: userDB._id,
+                nombre: userDB.nombre,
+                email: userDB.email,
+                avatar: userDB.avatar
+            });
+    
+            res.json({
+                ok: true,
+                token: tokenUser
+            });
         });
     });
+
 });
 
 // actualizar Usuario

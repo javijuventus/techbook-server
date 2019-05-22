@@ -6,8 +6,8 @@ import phonesRoutes from './routes/phone-routes';
 import fileUpload from 'express-fileupload';
 import cors from 'cors';
 import ratingsRoutes from './routes/ratings-routes';
-require('dotenv/config');
 const morgan = require('morgan');
+const config = require('./classes/config')
 
 const server = new Server();
 
@@ -29,17 +29,29 @@ server.app.use('/ratings', ratingsRoutes);
 
 
 //conectar db
-/* mongoose.connect('mongodb://localhost:27017/techbook'
+mongoose.connect( config.db
     , { useNewUrlParser: true, useCreateIndex: true, }, ((err: any) => {
         if (err) throw err;
         console.log('Base de datos online');
-    })); */
+    }));
 
-mongoose.connect('mongodb://techbook:techbook123@techbook-shard-00-00-jxncs.mongodb.net:27017,techbook-shard-00-01-jxncs.mongodb.net:27017,techbook-shard-00-02-jxncs.mongodb.net:27017/techbook?ssl=true&replicaSet=Techbook-shard-0&authSource=admin&retryWrites=true'
+    const connection = mongoose.connection;
+
+    connection.on('error', () => {
+        console.log("MongoDB connection error. Asegurate de que MongoDB está corriendo");
+    })
+
+    connection.once('open', () => {
+
+        console.log("Base de datos MongoDB establecida la conexión correctamente");
+        
+    })
+
+/* mongoose.connect('mongodb://techbook:techbook123@techbook-shard-00-00-jxncs.mongodb.net:27017,techbook-shard-00-01-jxncs.mongodb.net:27017,techbook-shard-00-02-jxncs.mongodb.net:27017/techbook?ssl=true&replicaSet=Techbook-shard-0&authSource=admin&retryWrites=true'
     , { useNewUrlParser: true, useCreateIndex: true }, ((err: any) => {
         if (err) throw err;
         console.log('Base de datos online');
-    }));
+    })); */
 
 //Levantar express
 

@@ -15,11 +15,13 @@ const usuarioSchema = new Schema ( {
     email: {
         type: String,
         unique: true,
-        required: [ true, 'El correo es necesario']
+        required: [ true, 'El correo es necesario'],
+        trim:true
     },
     password: {
         type: String,
-        required: [true, 'La contraseña es necesaria']
+        required: [true, 'La contraseña es necesaria'],
+        trim:true
     }
 });
 

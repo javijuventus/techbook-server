@@ -37,8 +37,7 @@ var phoneSchema = new mongoose_1.Schema({
         type: Date
     },
     img: [{
-            type: String,
-            default: 'mobile-icon.png'
+            type: String
         }],
     num_positivos: {
         type: Number,

@@ -1,10 +1,10 @@
 import { Router, Request, Response } from "express";
 import { verificaToken } from '../middlewares/autenticacion';
 import { Phone } from "../models/phones.model";
-import { Ratings } from '../models/ratings.model';
-
+import FileSystem from '../classes/file-system';
 
 const phonesRoutes = Router();
+const fileSystem = new FileSystem();
 
 //Obtener Moviles
 phonesRoutes.get('/', async (req: Request, res: Response) => {
@@ -21,11 +21,11 @@ phonesRoutes.get('/', async (req: Request, res: Response) => {
         .populate('usuario')
         .exec()
 
-        res.json({
-            ok: true,
-            pagina,
-            phones
-        })
+    res.json({
+        ok: true,
+        pagina,
+        phones
+    })
 });
 
 //Obtener Moviles mas likes
@@ -87,14 +87,15 @@ phonesRoutes.get('/dislikes', async (req: Request, res: Response) => {
 
 //Crear moviles
 phonesRoutes.post('/', [verificaToken], (req: Request, res: Response) => {
-//He puesto el await
+    //He puesto el await
     const body = req.body;
+
 
     Phone.create(body).then(phoneDB => {
 
         res.json({
             ok: true,
-            phone: phoneDB
+            phoneDB
         });
 
     }).catch(err => {
@@ -122,10 +123,12 @@ phonesRoutes.get('/:phoneId', async (req, res) => {
 
 //Delete phone
 phonesRoutes.delete('/:phoneId', [verificaToken], async (req: Request, res: Response) => {
+    const phoneId = req.params.phoneId;
     try {
         const removedPhone = await Phone.deleteOne({
-            _id: req.params.phoneId
+            _id: phoneId
         });
+        await fileSystem.borrarCapetaMovil(phoneId)
         res.json(removedPhone);
     } catch (err) {
         res.json({
@@ -164,6 +167,69 @@ phonesRoutes.patch('/:phoneId', [verificaToken], async (req: Request, res: Respo
     }
 });
 
+//Servicio para subir imagenes
+
+phonesRoutes.post('/upload/:phoneId', [verificaToken], async (req: Request, res: Response) => {
+
+    if (!req.files) {
+        return res.status(400).json({
+            mensaje: 'No se subió ningun archivo'
+        });
+    }
+
+    const file: any = req.files.img;
+
+    if (!file) {
+        return res.status(400).json({
+            mensaje: 'No se subió ningun archivo - image'
+        });
+    }
+
+    if (!file.mimetype.includes('image')) {
+        return res.status(400).json({
+            mensaje: 'No se subió ninguna imagen'
+        });
+    }
+
+    const phoneId = req.params.phoneId;
+    await fileSystem.guardarImagenTemporal(file, phoneId);
+
+    res.status(200).json({
+        ok: true,
+        file: file.mimetype
+    });
+})
+
+phonesRoutes.patch('/upload/:phoneId', [verificaToken], async (req: Request, res: Response) => {
+
+    const body = req.body;
+    const phoneId = req.params.phoneId;
+    const imagenes = fileSystem.imagenesDeTempHaciaPhone(phoneId);
+    body.img = imagenes;
+
+    Phone.updateOne(
+        {_id: phoneId},
+    {
+        $set:
+        {
+            img: body.img,
+        }
+    }, (err, phoneUpdated) => {
+        if (err) throw res.json({ok:false,err});
+
+        res.json({ ok: true, phoneUpdated });
+    });
+})
+
+phonesRoutes.get('/imagen/:phoneId/:img', [verificaToken],async (req: any, res: Response) => {
+
+    const phoneId = req.params.phoneId;
+    const img = req.params.img;
+
+    const pathFoto = await fileSystem.getFotoMovil(phoneId, img);
+
+    res.sendFile(pathFoto);
+});
 
 
 export default phonesRoutes;

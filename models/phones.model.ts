@@ -37,7 +37,8 @@ const phoneSchema = new Schema({
         type: Date
     },
     img: [{
-        type: String
+        type: String,
+        default: 'mobile-icon.png'
     }],
     num_positivos: {
         type: Number,

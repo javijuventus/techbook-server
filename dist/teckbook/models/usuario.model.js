@@ -17,13 +17,11 @@ var usuarioSchema = new mongoose_1.Schema({
     email: {
         type: String,
         unique: true,
-        required: [true, 'El correo es necesario'],
-        trim: true
+        required: [true, 'El correo es necesario']
     },
     password: {
         type: String,
-        required: [true, 'La contraseña es necesaria'],
-        trim: true
+        required: [true, 'La contraseña es necesaria']
     }
 });
 usuarioSchema.methods.toJSON = function () {

@@ -11,8 +11,8 @@ var phone_routes_1 = __importDefault(require("./routes/phone-routes"));
 var express_fileupload_1 = __importDefault(require("express-fileupload"));
 var cors_1 = __importDefault(require("cors"));
 var ratings_routes_1 = __importDefault(require("./routes/ratings-routes"));
+require('dotenv/config');
 var morgan = require('morgan');
-var config = require('./classes/config');
 var server = new server_1.default();
 // BodyParser
 server.app.use(body_parser_1.default.urlencoded({ extended: true }));
@@ -27,23 +27,16 @@ server.app.use('/user', usuario_routes_1.default);
 server.app.use('/phones', phone_routes_1.default);
 server.app.use('/ratings', ratings_routes_1.default);
 //conectar db
-mongoose_1.default.connect(config.db, { useNewUrlParser: true, useCreateIndex: true, }, (function (err) {
+/* mongoose.connect('mongodb://localhost:27017/techbook'
+    , { useNewUrlParser: true, useCreateIndex: true, }, ((err: any) => {
+        if (err) throw err;
+        console.log('Base de datos online');
+    })); */
+mongoose_1.default.connect('mongodb://techbook:techbook123@techbook-shard-00-00-jxncs.mongodb.net:27017,techbook-shard-00-01-jxncs.mongodb.net:27017,techbook-shard-00-02-jxncs.mongodb.net:27017/techbook?ssl=true&replicaSet=Techbook-shard-0&authSource=admin&retryWrites=true', { useNewUrlParser: true, useCreateIndex: true }, (function (err) {
     if (err)
         throw err;
     console.log('Base de datos online');
 }));
-var connection = mongoose_1.default.connection;
-connection.on('error', function () {
-    console.log("MongoDB connection error. Asegurate de que MongoDB está corriendo");
-});
-connection.once('open', function () {
-    console.log("Base de datos MongoDB establecida la conexión correctamente");
-});
-/* mongoose.connect('mongodb://techbook:techbook123@techbook-shard-00-00-jxncs.mongodb.net:27017,techbook-shard-00-01-jxncs.mongodb.net:27017,techbook-shard-00-02-jxncs.mongodb.net:27017/techbook?ssl=true&replicaSet=Techbook-shard-0&authSource=admin&retryWrites=true'
-    , { useNewUrlParser: true, useCreateIndex: true }, ((err: any) => {
-        if (err) throw err;
-        console.log('Base de datos online');
-    })); */
 //Levantar express
 server.start(function () {
     console.log("Servidor corriendo en puerto " + server.app.get('port'));
