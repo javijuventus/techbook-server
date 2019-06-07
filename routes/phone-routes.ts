@@ -172,9 +172,6 @@ phonesRoutes.post('/buscar/marca', async (req, res) => {
         marca:{
             $regex: new RegExp(query)
         }
-    }, {
-        _id: 0,
-        _v: 0
     }, function ( err, phones) {
         if (err) throw res.json({ok:false,err,mensaje:"No se encontró ningún resultado"})
         res.json({
@@ -202,9 +199,6 @@ phonesRoutes.post('/buscar/modelo', async (req, res) => {
         modelo:{
             $regex: new RegExp(query)
         }
-    }, {
-        _id: 0,
-        _v: 0
     }, function ( err, phones) {
         if (err) throw res.json({ok:false,err,mensaje:"No se encontró ningún resultado"})
          res.json({

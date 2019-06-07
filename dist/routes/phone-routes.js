@@ -233,9 +233,6 @@ phonesRoutes.post('/buscar/marca', function (req, res) { return __awaiter(_this,
             marca: {
                 $regex: new RegExp(query)
             }
-        }, {
-            _id: 0,
-            _v: 0
         }, function (err, phones) {
             if (err)
                 throw res.json({ ok: false, err: err, mensaje: "No se encontró ningún resultado" });
@@ -263,9 +260,6 @@ phonesRoutes.post('/buscar/modelo', function (req, res) { return __awaiter(_this
             modelo: {
                 $regex: new RegExp(query)
             }
-        }, {
-            _id: 0,
-            _v: 0
         }, function (err, phones) {
             if (err)
                 throw res.json({ ok: false, err: err, mensaje: "No se encontró ningún resultado" });
