@@ -45,8 +45,8 @@ var phones_model_1 = require("../models/phones.model");
 var file_system_1 = __importDefault(require("../classes/file-system"));
 var phonesRoutes = express_1.Router();
 var fileSystem = new file_system_1.default();
-//Obtener Moviles
-phonesRoutes.get('/', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+//Obtener últimos Moviles
+phonesRoutes.get('/last', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
     var pagina, skip, phones;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -55,10 +55,9 @@ phonesRoutes.get('/', function (req, res) { return __awaiter(_this, void 0, void
                 skip = pagina - 1;
                 skip = skip * 10;
                 return [4 /*yield*/, phones_model_1.Phone.find()
-                        .sort({ _id: -1 }) //Ordena por ID de forma descendiente
+                        .sort({ fechaLanzamiento: -1 }) //Ordena por ID de forma descendiente
                         .skip(skip)
                         .limit(10)
-                        .populate('usuario')
                         .exec()];
             case 1:
                 phones = _a.sent();
@@ -73,27 +72,26 @@ phonesRoutes.get('/', function (req, res) { return __awaiter(_this, void 0, void
 }); });
 //Obtener Moviles mas likes
 phonesRoutes.get('/likes', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-    var phones, err_1;
+    var pagina, skip, phones, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, phones_model_1.Phone.aggregate([{
-                            $project: {
-                                marca: 1,
-                                modelo: 1,
-                                img: 1,
-                                fechaLanzamiento: 1,
-                                total: { $subtract: ["$num_positivos", "$num_negativos"] },
-                            }
-                        }])
-                        .match({ total: { $gt: 0 } })
-                        .sort({ total: -1 })
-                        .limit(5)
+                pagina = Number(req.query.pagina) || 1;
+                skip = pagina - 1;
+                skip = skip * 10;
+                return [4 /*yield*/, phones_model_1.Phone.find()
+                        .sort({ num_positivos: -1 }) //Ordena por ID de forma descendiente
+                        .skip(skip)
+                        .limit(10)
                         .exec()];
             case 1:
                 phones = _a.sent();
-                res.json(phones);
+                res.json({
+                    ok: true,
+                    pagina: pagina,
+                    phones: phones
+                });
                 return [3 /*break*/, 3];
             case 2:
                 err_1 = _a.sent();
@@ -106,29 +104,27 @@ phonesRoutes.get('/likes', function (req, res) { return __awaiter(_this, void 0,
         }
     });
 }); });
-//Obtener Moviles mas likes
 phonesRoutes.get('/dislikes', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-    var phones, err_2;
+    var pagina, skip, phones, err_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, phones_model_1.Phone.aggregate([{
-                            $project: {
-                                marca: 1,
-                                modelo: 1,
-                                img: 1,
-                                fechaLanzamiento: 1,
-                                total: { $subtract: ["$num_positivos", "$num_negativos"] },
-                            }
-                        }])
-                        .match({ total: { $lt: 0 } })
-                        .sort({ total: 1 })
-                        .limit(5)
+                pagina = Number(req.query.pagina) || 1;
+                skip = pagina - 1;
+                skip = skip * 10;
+                return [4 /*yield*/, phones_model_1.Phone.find()
+                        .sort({ num_negativos: -1 }) //Ordena por ID de forma descendiente
+                        .skip(skip)
+                        .limit(10)
                         .exec()];
             case 1:
                 phones = _a.sent();
-                res.json(phones);
+                res.json({
+                    ok: true,
+                    pagina: pagina,
+                    phones: phones
+                });
                 return [3 /*break*/, 3];
             case 2:
                 err_2 = _a.sent();
@@ -141,14 +137,59 @@ phonesRoutes.get('/dislikes', function (req, res) { return __awaiter(_this, void
         }
     });
 }); });
+//Obtener Moviles más populares
+phonesRoutes.get('/popular', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+    var pagina, skip, phones, err_3;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                pagina = Number(req.query.pagina) || 1;
+                skip = pagina - 1;
+                skip = skip * 10;
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, phones_model_1.Phone.aggregate([{
+                            $project: {
+                                marca: 1,
+                                modelo: 1,
+                                img: 1,
+                                fechaLanzamiento: 1,
+                                total: { $subtract: ["$num_positivos", "$num_negativos"] },
+                            }
+                        }])
+                        .match({ total: { $lt: 0 } })
+                        .sort({ total: -1 })
+                        .skip(10)
+                        .limit(10)
+                        .exec()];
+            case 2:
+                phones = _a.sent();
+                res.json({
+                    ok: true,
+                    pagina: pagina,
+                    phones: phones
+                });
+                return [3 /*break*/, 4];
+            case 3:
+                err_3 = _a.sent();
+                res.json({
+                    ok: false,
+                    message: err_3
+                });
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
 //Crear moviles
 phonesRoutes.post('/', [autenticacion_1.verificaToken], function (req, res) {
     //He puesto el await
     var body = req.body;
-    phones_model_1.Phone.create(body).then(function (phoneDB) {
+    phones_model_1.Phone.create(body).then(function (phone) {
         res.json({
             ok: true,
-            phoneDB: phoneDB
+            phone: phone
         });
     }).catch(function (err) {
         res.json({
@@ -159,7 +200,7 @@ phonesRoutes.post('/', [autenticacion_1.verificaToken], function (req, res) {
 });
 //Specific phone
 phonesRoutes.get('/:phoneId', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-    var phone, err_3;
+    var phone, err_4;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -170,19 +211,79 @@ phonesRoutes.get('/:phoneId', function (req, res) { return __awaiter(_this, void
                 res.json(phone);
                 return [3 /*break*/, 3];
             case 2:
-                err_3 = _a.sent();
+                err_4 = _a.sent();
                 res.json({
                     ok: false,
-                    message: err_3
+                    message: err_4
                 });
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];
         }
     });
 }); });
+//Buscar por Marca
+phonesRoutes.post('/buscar/marca', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+    var pagina, skip, query;
+    return __generator(this, function (_a) {
+        pagina = Number(req.query.pagina) || 1;
+        skip = pagina - 1;
+        skip = skip * 10;
+        query = req.body.query;
+        phones_model_1.Phone.find({
+            marca: {
+                $regex: new RegExp(query)
+            }
+        }, {
+            _id: 0,
+            _v: 0
+        }, function (err, phones) {
+            if (err)
+                throw res.json({ ok: false, err: err, mensaje: "No se encontró ningún resultado" });
+            res.json({
+                ok: true,
+                pagina: pagina,
+                phones: phones
+            });
+        })
+            .skip(skip)
+            .sort({ marca: -1 })
+            .limit(10);
+        return [2 /*return*/];
+    });
+}); });
+//Buscar por Modelo
+phonesRoutes.post('/buscar/modelo', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+    var pagina, skip, query;
+    return __generator(this, function (_a) {
+        pagina = Number(req.query.pagina) || 1;
+        skip = pagina - 1;
+        skip = skip * 10;
+        query = req.body.query;
+        phones_model_1.Phone.find({
+            modelo: {
+                $regex: new RegExp(query)
+            }
+        }, {
+            _id: 0,
+            _v: 0
+        }, function (err, phones) {
+            if (err)
+                throw res.json({ ok: false, err: err, mensaje: "No se encontró ningún resultado" });
+            res.json({
+                ok: true,
+                pagina: pagina,
+                phones: phones
+            });
+        })
+            .skip(skip)
+            .sort({ marca: -1 })
+            .limit(10);
+        return [2 /*return*/];
+    });
+}); });
 //Delete phone
 phonesRoutes.delete('/:phoneId', [autenticacion_1.verificaToken], function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-    var phoneId, removedPhone, err_4;
+    var phoneId, removedPhone, err_5;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -201,10 +302,10 @@ phonesRoutes.delete('/:phoneId', [autenticacion_1.verificaToken], function (req,
                 res.json(removedPhone);
                 return [3 /*break*/, 5];
             case 4:
-                err_4 = _a.sent();
+                err_5 = _a.sent();
                 res.json({
                     ok: false,
-                    message: err_4
+                    message: err_5
                 });
                 return [3 /*break*/, 5];
             case 5: return [2 /*return*/];
@@ -213,7 +314,7 @@ phonesRoutes.delete('/:phoneId', [autenticacion_1.verificaToken], function (req,
 }); });
 //Update a phone
 phonesRoutes.patch('/:phoneId', [autenticacion_1.verificaToken], function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-    var updatePhone, err_5;
+    var updatePhone, err_6;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -239,17 +340,17 @@ phonesRoutes.patch('/:phoneId', [autenticacion_1.verificaToken], function (req, 
                 res.json(updatePhone);
                 return [3 /*break*/, 3];
             case 2:
-                err_5 = _a.sent();
+                err_6 = _a.sent();
                 res.json({
                     ok: false,
-                    message: err_5
+                    message: err_6
                 });
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];
         }
     });
 }); });
-//Servicio para subir imagenes
+//Guardar las imagenes en temporal para ese movil
 phonesRoutes.post('/upload/:phoneId', [autenticacion_1.verificaToken], function (req, res) { return __awaiter(_this, void 0, void 0, function () {
     var file, phoneId;
     return __generator(this, function (_a) {
@@ -277,7 +378,8 @@ phonesRoutes.post('/upload/:phoneId', [autenticacion_1.verificaToken], function 
                 _a.sent();
                 res.status(200).json({
                     ok: true,
-                    file: file.mimetype
+                    file: file.mimetype,
+                    mensaje: 'Imagen temporal subida correctamente'
                 });
                 return [2 /*return*/];
         }
@@ -297,12 +399,16 @@ phonesRoutes.patch('/upload/:phoneId', [autenticacion_1.verificaToken], function
         }, function (err, phoneUpdated) {
             if (err)
                 throw res.json({ ok: false, err: err });
-            res.json({ ok: true, phoneUpdated: phoneUpdated });
+            res.json({
+                ok: true,
+                phoneUpdated: phoneUpdated,
+                mensaje: 'Imagen guardada en la base de datos'
+            });
         });
         return [2 /*return*/];
     });
 }); });
-phonesRoutes.get('/imagen/:phoneId/:img', [autenticacion_1.verificaToken], function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+phonesRoutes.get('/imagen/:phoneId/:img', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
     var phoneId, img, pathFoto;
     return __generator(this, function (_a) {
         switch (_a.label) {

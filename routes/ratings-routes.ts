@@ -27,9 +27,7 @@ ratingsRoutes.get('/', async (req: Request, res: Response) => {
         ok: true,
         pagina,
         ratings
-    }).app
-
-    
+    })
 });
 
 
@@ -67,7 +65,7 @@ ratingsRoutes.get('/camara/:phoneId', async (req: Request, res: Response) => {
         if (err) throw err;
         res.json({
             result
-        })
+        });
 
     });
 

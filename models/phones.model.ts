@@ -48,9 +48,32 @@ const phoneSchema = new Schema({
         type: Number,
         default: 0
     },
-    ratingGlobal:{
-        type:Number,
-        default:0
+    valoraciones: {
+        
+        avg_total: {
+            type:Number,
+            default:3
+        },
+        avg_pantalla: {
+            type:Number,
+            default:3
+        },
+        avg_aspecto: {
+            type:Number,
+            default:3
+        },
+        avg_bateria: {
+            type:Number,
+            default:3
+        },
+        avg_cpu: {
+            type:Number,
+            default:3
+        },
+        avg_camara: {
+            type:Number,
+            default:3
+        },
     },
     created: {
         type: Date
@@ -68,15 +91,31 @@ interface IPhone extends Document {
     cpu: string,
     ram: string,
     almacenamiento: string,
-    camara: object,
+    camara: ICamara,
     bateria: string,
     pantalla: string,
+    fechaLanzamiento: Date,
     img: string,
     num_positivos: number,
     num_negativos: number,
-    fechaLanzamiento: Date,
-    ratingGlobal: number,
+    valoraciones: IAvgRatings,
     created: Date;
+}
+
+interface ICamara extends Document {
+    delantera: string,
+    trasera1: string,
+    trasera2: string,
+    trasera3: string,
+}
+
+interface IAvgRatings extends Document {
+    avg_total: number,
+    avg_pantalla: number,
+    avg_cpu: number,
+    avg_aspecto:number,
+    avg_camara: number,
+    avg_bateria: number
 }
 
 export const Phone = model<IPhone>('Phone', phoneSchema);

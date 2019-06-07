@@ -67,7 +67,7 @@ ratingsRoutes.get('/', function (req, res) { return __awaiter(_this, void 0, voi
                     ok: true,
                     pagina: pagina,
                     ratings: ratings
-                }).app;
+                });
                 return [2 /*return*/];
         }
     });

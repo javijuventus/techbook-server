@@ -48,9 +48,31 @@ var phoneSchema = new mongoose_1.Schema({
         type: Number,
         default: 0
     },
-    ratingGlobal: {
-        type: Number,
-        default: 0
+    valoraciones: {
+        avg_total: {
+            type: Number,
+            default: 3
+        },
+        avg_pantalla: {
+            type: Number,
+            default: 3
+        },
+        avg_aspecto: {
+            type: Number,
+            default: 3
+        },
+        avg_bateria: {
+            type: Number,
+            default: 3
+        },
+        avg_cpu: {
+            type: Number,
+            default: 3
+        },
+        avg_camara: {
+            type: Number,
+            default: 3
+        },
     },
     created: {
         type: Date
