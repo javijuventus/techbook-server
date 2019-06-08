@@ -7,7 +7,7 @@ const phonesRoutes = Router();
 const fileSystem = new FileSystem();
 
 //Obtener últimos Moviles
-phonesRoutes.get('/last', async (req: Request, res: Response) => {
+phonesRoutes.get('/latest', async (req: Request, res: Response) => {
 
 
     let pagina = Number(req.query.pagina) || 1;

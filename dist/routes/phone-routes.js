@@ -46,7 +46,7 @@ var file_system_1 = __importDefault(require("../classes/file-system"));
 var phonesRoutes = express_1.Router();
 var fileSystem = new file_system_1.default();
 //Obtener últimos Moviles
-phonesRoutes.get('/last', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+phonesRoutes.get('/latest', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
     var pagina, skip, phones;
     return __generator(this, function (_a) {
         switch (_a.label) {
