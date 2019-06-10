@@ -9,7 +9,6 @@ export default class Token {
 
     private static seed: string = config.jwtSecret;
     private static caducidad: string = '30d';
-
     constructor() { }
 
     static getJwtToken(payload: any): string {

@@ -92,16 +92,18 @@ userRoutes.post('/create', (req: Request, res: Response) => {
 
 // actualizar Usuario
 
-userRoutes.post('/update', verificaToken, (req: Request, res: Response) => {
+userRoutes.post('/update', [verificaToken], (req: Request, res: Response) => {
 
+
+    const data = req.usuario;
     const user = {
         nombre: req.body.nombre || req.usuario.nombre,
         email: req.body.email || req.usuario.email,
         avatar: req.body.avatar || req.usuario.avatar
     }
+    Usuario.findByIdAndUpdate(data.usuario._id, user, { new: true }, (err, userDB) => {
 
-    Usuario.findByIdAndUpdate(req.usuario._id, user, { new: true }, (err, userDB) => {
-        if (err) throw err;
+        if (err) throw res.status(400).json(res);
 
         if (!userDB) {
             return res.json({

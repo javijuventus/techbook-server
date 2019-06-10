@@ -10,7 +10,6 @@ export const verificaToken = ( req: Request, res: Response, next: NextFunction) 
     const userToken = req.get('x-token') || '';
 
     Token.comprobarToken( userToken ).then (  (decoded: any) => {
-        console.log('Decoded', decoded);
         req.usuario = decoded;
         next();
     }).catch( err => {

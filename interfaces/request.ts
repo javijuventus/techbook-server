@@ -4,7 +4,8 @@ declare namespace Express {
     }
 }
  
-interface Usuario {
+ interface Usuario {
+    usuario?: any;
     _id: string;
     nombre: string;
     email: string;

@@ -74,15 +74,16 @@ userRoutes.post('/create', function (req, res) {
     });
 });
 // actualizar Usuario
-userRoutes.post('/update', autenticacion_1.verificaToken, function (req, res) {
+userRoutes.post('/update', [autenticacion_1.verificaToken], function (req, res) {
+    var data = req.usuario;
     var user = {
         nombre: req.body.nombre || req.usuario.nombre,
         email: req.body.email || req.usuario.email,
         avatar: req.body.avatar || req.usuario.avatar
     };
-    usuario_model_1.Usuario.findByIdAndUpdate(req.usuario._id, user, { new: true }, function (err, userDB) {
+    usuario_model_1.Usuario.findByIdAndUpdate(data.usuario._id, user, { new: true }, function (err, userDB) {
         if (err)
-            throw err;
+            throw res.status(400).json(res);
         if (!userDB) {
             return res.json({
                 ok: false,
