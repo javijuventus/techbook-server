@@ -423,54 +423,6 @@ phonesRoutes.get('/popular', async (req: Request, res: Response) => {
     }
 
 });
-//NO FUNCIONA
-phonesRoutes.get('/avg/:phoneId', async (req, res) => {
-
-    const phoneId = req.params.phoneId;
-    let pagina = Number(req.query.pagina) || 1;
-    let skip = pagina - 1;
-    skip = skip * 10;
-    // //{$match: { "_id" : "ObjectId('5cd8a21738e3f73e4cedc10c')"}}
-    try {
-        const phones = await Phone.aggregate(
-            [
-                { $match: { _id: ObjectId('5cd8a21738e3f73e4cedc10c') } }
-
-                , {
-                    $project: {
-                        marca: "$marca",
-                        modelo: "$modelo",
-                        pantalla: "$valoraciones.avg_pantalla",
-                        camara: "$valoraciones.avg_camara",
-                        cpu: "$valoraciones.avg_cpu",
-                        bateria: "$valoraciones.avg_bateria",
-                        aspecto: "$valoraciones.avg_aspecto",
-                        sumaAvgs: { $sum: ["$valoraciones.avg_pantalla", "$valoraciones.avg_bateria", "$valoraciones.avg_camara", "$valoraciones.avg_cpu", "$valoraciones.avg_aspecto"] }
-
-                    }
-                }
-
-                , { $group: { _id: { _id: "$_id" }, avgTotal: { $avg: "$sumaAvgs" } } }
-
-
-            ], function (err: any, phones: any) {
-                if (err) throw err;
-
-                res.json({
-                    ok:true,
-                    pagina,
-                    phones
-                });
-            });
-
-    } catch (err) {
-        res.json({
-            ok: false,
-            message: err
-        });
-    }
-
-});
 
 
 //Crear moviles

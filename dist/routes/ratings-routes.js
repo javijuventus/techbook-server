@@ -73,6 +73,64 @@ ratingsRoutes.get('/', function (req, res) { return __awaiter(_this, void 0, voi
         }
     });
 }); });
+// Trae los rating de determinado movil
+ratingsRoutes.get('/phone/:phoneId', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+    var pagina, skip, ratings, err_1;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                pagina = Number(req.query.pagina) || 1;
+                skip = pagina - 1;
+                skip = skip * 10;
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, ratings_model_1.Ratings.find({
+                        phone: { _id: req.params.phoneId }
+                    })
+                        .sort({ created: -1 }) //Ordena por ID de forma descendiente
+                        .skip(skip)
+                        .limit(10)
+                        .populate('usuario')
+                        .exec()];
+            case 2:
+                ratings = _a.sent();
+                res.json(ratings);
+                return [3 /*break*/, 4];
+            case 3:
+                err_1 = _a.sent();
+                res.json({
+                    ok: false,
+                    message: err_1
+                });
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
+//Obtener rating por Id
+ratingsRoutes.get('/id/:ratingId', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+    var rating, err_2;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, ratings_model_1.Ratings.findById(req.params.ratingId)];
+            case 1:
+                rating = _a.sent();
+                res.json(rating);
+                return [3 /*break*/, 3];
+            case 2:
+                err_2 = _a.sent();
+                res.json({
+                    ok: false,
+                    message: err_2
+                });
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
+        }
+    });
+}); });
 //Crear ratings
 ratingsRoutes.post('/', [autenticacion_1.verificaToken], function (req, res) {
     var body = req.body;
@@ -282,44 +340,9 @@ ratingsRoutes.get('/pantalla/:phoneId', function (req, res) { return __awaiter(_
         }
     });
 }); });
-// Trae los rating de determinado movil
-ratingsRoutes.get('/:phoneId', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-    var pagina, skip, ratings, err_1;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                pagina = Number(req.query.pagina) || 1;
-                skip = pagina - 1;
-                skip = skip * 10;
-                _a.label = 1;
-            case 1:
-                _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, ratings_model_1.Ratings.find({
-                        phone: { _id: req.params.phoneId }
-                    })
-                        .sort({ created: -1 }) //Ordena por ID de forma descendiente
-                        .skip(skip)
-                        .limit(10)
-                        .populate('usuario')
-                        .exec()];
-            case 2:
-                ratings = _a.sent();
-                res.json(ratings);
-                return [3 /*break*/, 4];
-            case 3:
-                err_1 = _a.sent();
-                res.json({
-                    ok: false,
-                    message: err_1
-                });
-                return [3 /*break*/, 4];
-            case 4: return [2 /*return*/];
-        }
-    });
-}); });
 //Delete ratings
 ratingsRoutes.delete('/:ratingsId', [autenticacion_1.verificaToken], function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-    var removedRatings, err_2;
+    var removedRatings, err_3;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -332,10 +355,10 @@ ratingsRoutes.delete('/:ratingsId', [autenticacion_1.verificaToken], function (r
                 res.json(removedRatings);
                 return [3 /*break*/, 3];
             case 2:
-                err_2 = _a.sent();
+                err_3 = _a.sent();
                 res.json({
                     ok: false,
-                    message: err_2
+                    message: err_3
                 });
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];
@@ -378,11 +401,4 @@ ratingsRoutes.patch('/:ratingsId', [autenticacion_1.verificaToken], function (re
         }
     });
 }); });
-function updatePhoneRating(body) {
-    return __awaiter(this, void 0, void 0, function () {
-        return __generator(this, function (_a) {
-            return [2 /*return*/];
-        });
-    });
-}
 exports.default = ratingsRoutes;

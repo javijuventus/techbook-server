@@ -31,8 +31,46 @@ ratingsRoutes.get('/', async (req: Request, res: Response) => {
         ratings
     })
 });
+// Trae los rating de determinado movil
+ratingsRoutes.get('/phone/:phoneId', async (req, res) => {
 
+    let pagina = Number(req.query.pagina) || 1;
+    let skip = pagina - 1;
+    skip = skip * 10;
 
+    try {
+        const ratings = await Ratings.find({
+            phone: { _id: req.params.phoneId }
+        })
+            .sort({ created: -1 }) //Ordena por ID de forma descendiente
+            .skip(skip)
+            .limit(10)
+            .populate('usuario')
+            .exec();
+
+        res.json(ratings);
+    } catch (err) {
+        res.json({
+            ok: false,
+            message: err
+        });
+    }
+
+});
+//Obtener rating por Id
+ratingsRoutes.get('/id/:ratingId', async (req, res) => {
+
+    try {
+        const rating = await Ratings.findById(req.params.ratingId);
+        res.json(rating);
+    } catch (err) {
+        res.json({
+            ok: false,
+            message: err
+        });
+    }
+
+});
 //Crear ratings
 ratingsRoutes.post('/', [verificaToken], (req: Request, res: Response) => {
 
@@ -230,32 +268,6 @@ ratingsRoutes.get('/pantalla/:phoneId', async (req: Request, res: Response) => {
 
 });
 
-// Trae los rating de determinado movil
-ratingsRoutes.get('/:phoneId', async (req, res) => {
-
-    let pagina = Number(req.query.pagina) || 1;
-    let skip = pagina - 1;
-    skip = skip * 10;
-
-    try {
-        const ratings = await Ratings.find({
-            phone: { _id: req.params.phoneId }
-        })
-            .sort({ created: -1 }) //Ordena por ID de forma descendiente
-            .skip(skip)
-            .limit(10)
-            .populate('usuario')
-            .exec();
-
-        res.json(ratings);
-    } catch (err) {
-        res.json({
-            ok: false,
-            message: err
-        });
-    }
-
-});
 
 //Delete ratings
 ratingsRoutes.delete('/:ratingsId', [verificaToken], async (req: Request, res: Response) => {
@@ -303,12 +315,6 @@ ratingsRoutes.patch('/:ratingsId', [verificaToken], async (req: Request, res: Re
 
         });
 });
-
-async function updatePhoneRating(body: any) {
-
-
-
-}
 
 
 export default ratingsRoutes;

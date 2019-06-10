@@ -515,57 +515,6 @@ phonesRoutes.get('/popular', function (req, res) { return __awaiter(_this, void 
         }
     });
 }); });
-//NO FUNCIONA
-phonesRoutes.get('/avg/:phoneId', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-    var phoneId, pagina, skip, phones, err_9;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                phoneId = req.params.phoneId;
-                pagina = Number(req.query.pagina) || 1;
-                skip = pagina - 1;
-                skip = skip * 10;
-                _a.label = 1;
-            case 1:
-                _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, phones_model_1.Phone.aggregate([
-                        { $match: { _id: ObjectId('5cd8a21738e3f73e4cedc10c') } },
-                        {
-                            $project: {
-                                marca: "$marca",
-                                modelo: "$modelo",
-                                pantalla: "$valoraciones.avg_pantalla",
-                                camara: "$valoraciones.avg_camara",
-                                cpu: "$valoraciones.avg_cpu",
-                                bateria: "$valoraciones.avg_bateria",
-                                aspecto: "$valoraciones.avg_aspecto",
-                                sumaAvgs: { $sum: ["$valoraciones.avg_pantalla", "$valoraciones.avg_bateria", "$valoraciones.avg_camara", "$valoraciones.avg_cpu", "$valoraciones.avg_aspecto"] }
-                            }
-                        },
-                        { $group: { _id: { _id: "$_id" }, avgTotal: { $avg: "$sumaAvgs" } } }
-                    ], function (err, phones) {
-                        if (err)
-                            throw err;
-                        res.json({
-                            ok: true,
-                            pagina: pagina,
-                            phones: phones
-                        });
-                    })];
-            case 2:
-                phones = _a.sent();
-                return [3 /*break*/, 4];
-            case 3:
-                err_9 = _a.sent();
-                res.json({
-                    ok: false,
-                    message: err_9
-                });
-                return [3 /*break*/, 4];
-            case 4: return [2 /*return*/];
-        }
-    });
-}); });
 //Crear moviles
 phonesRoutes.post('/', [autenticacion_1.verificaToken], function (req, res) {
     //He puesto el await
@@ -584,7 +533,7 @@ phonesRoutes.post('/', [autenticacion_1.verificaToken], function (req, res) {
 });
 //Buscar movil por Id
 phonesRoutes.get('/:phoneId', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-    var phone, err_10;
+    var phone, err_9;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -595,10 +544,10 @@ phonesRoutes.get('/:phoneId', function (req, res) { return __awaiter(_this, void
                 res.json(phone);
                 return [3 /*break*/, 3];
             case 2:
-                err_10 = _a.sent();
+                err_9 = _a.sent();
                 res.json({
                     ok: false,
-                    message: err_10
+                    message: err_9
                 });
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];
@@ -653,7 +602,7 @@ phonesRoutes.post('/buscar/modelo', function (req, res) {
 });
 //Delete phone
 phonesRoutes.delete('/:phoneId', [autenticacion_1.verificaToken], function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-    var phoneId, phone, err_11;
+    var phoneId, phone, err_10;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -672,10 +621,10 @@ phonesRoutes.delete('/:phoneId', [autenticacion_1.verificaToken], function (req,
                 res.json(phone);
                 return [3 /*break*/, 5];
             case 4:
-                err_11 = _a.sent();
+                err_10 = _a.sent();
                 res.json({
                     ok: false,
-                    message: err_11
+                    message: err_10
                 });
                 return [3 /*break*/, 5];
             case 5: return [2 /*return*/];
@@ -684,7 +633,7 @@ phonesRoutes.delete('/:phoneId', [autenticacion_1.verificaToken], function (req,
 }); });
 //Update a phone
 phonesRoutes.patch('/:phoneId', [autenticacion_1.verificaToken], function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-    var phone, err_12;
+    var phone, err_11;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -710,10 +659,10 @@ phonesRoutes.patch('/:phoneId', [autenticacion_1.verificaToken], function (req, 
                 res.json(phone);
                 return [3 /*break*/, 3];
             case 2:
-                err_12 = _a.sent();
+                err_11 = _a.sent();
                 res.json({
                     ok: false,
-                    message: err_12
+                    message: err_11
                 });
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];
