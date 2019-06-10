@@ -1,7 +1,9 @@
 import { Router, Request, Response } from "express";
 import { verificaToken } from '../middlewares/autenticacion';
-import { Ratings } from "../models/ratings.model";
+import { Ratings } from '../models/ratings.model';
 import mongoose from 'mongoose';
+import { Phone } from '../models/phones.model';
+import phonesRoutes from "./phone-routes";
 const ObjectId = mongoose.Types.ObjectId;
 
 
@@ -37,36 +39,65 @@ ratingsRoutes.post('/', [verificaToken], (req: Request, res: Response) => {
     const body = req.body;
     body.usuario = req.usuario._id;
     body.phone = req.body.phone;
+    const positivo = body.positivo;
+    const negativo = body.negativo;
+
 
     Ratings.create(body).then(async ratingsDB => {
 
         const rating = await ratingsDB.populate('usuario').populate('phone').execPopulate();
+
+        if (positivo) {
+            await Phone.update(
+                { _id: body.phone },
+                { $inc: { num_positivos: 1 } }
+            )
+        } else if (negativo) {
+            Phone.update(
+                { _id: body.phone },
+                { $inc: { num_negativos: 1 } }
+            )
+        }
 
         res.json({
             ok: true,
             rating
         });
 
-    }).catch(err => {
-        res.json({
-            ok: false,
-            err
-        });
-    })
+
+
+    });
+
 });
 
 //Obtener phones top camra
 ratingsRoutes.get('/camara/:phoneId', async (req: Request, res: Response) => {
 
+    const phoneId = req.params.phoneId;
     await Ratings.aggregate([
-        { $match: { phone: ObjectId(`${req.params.phoneId}`) } },
-        { $group: { _id: null, average: { $avg: '$val_camara' } } }
+        { $match: { phone: ObjectId(`${phoneId}`) } },
+        { $group: { _id: { _id: "$phone" }, average: { $avg: '$val_camara' } } }
     ], function (err: any, result: any) {
         if (err) throw err;
-        res.json({
-            result
-        });
+        
+        Phone.findOneAndUpdate({ "_id" : phoneId},
+            { $set: { "valoraciones.avg_camara" : Math.round(result[0].average) } },{new: true}, (err, phoneDB) => {
+                if (err) throw err;
 
+                if (!phoneDB) {
+                    return res.json({
+                        ok: false,
+                        mensaje: 'No existe un movil con ese ID'
+                    });
+                }
+
+                res.json({
+                    ok: true,
+                    result,
+                    phone: phoneDB
+                });
+
+            });
     });
 
 });
@@ -74,15 +105,31 @@ ratingsRoutes.get('/camara/:phoneId', async (req: Request, res: Response) => {
 //Obtener phones top diseño
 ratingsRoutes.get('/aspecto/:phoneId', async (req: Request, res: Response) => {
 
+    const phoneId = req.params.phoneId;
     await Ratings.aggregate([
-        { $match: { phone: ObjectId(`${req.params.phoneId}`) } },
-        { $group: { _id: "$marca", average: { $avg: '$val_aspecto' } } }
+        { $match: { phone: ObjectId(`${phoneId}`) } },
+        { $group: { _id: null, average: { $avg: '$val_aspecto' } } }
+        
     ], function (err: any, result: any) {
         if (err) throw err;
-        res.json({
-            result
-        })
+        Phone.findOneAndUpdate({ "_id" : phoneId},
+            { $set: { "valoraciones.avg_aspecto" : Math.round(result[0].average) } },{new: true}, (err, phoneDB) => {
+                if (err) throw err;
 
+                if (!phoneDB) {
+                    return res.json({
+                        ok: false,
+                        mensaje: 'No existe un movil con ese ID'
+                    });
+                }
+
+                res.json({
+                    ok: true,
+                    result,
+                    phone: phoneDB
+                });
+
+            });
     });
 
 });
@@ -90,15 +137,30 @@ ratingsRoutes.get('/aspecto/:phoneId', async (req: Request, res: Response) => {
 //Obtener phones top cpu
 ratingsRoutes.get('/cpu/:phoneId', async (req: Request, res: Response) => {
 
+    const phoneId = req.params.phoneId;
     await Ratings.aggregate([
-        { $match: { phone: ObjectId(`${req.params.phoneId}`) } },
+        { $match: { phone: ObjectId(`${phoneId}`) } },
         { $group: { _id: null, average: { $avg: '$val_cpu' } } }
     ], function (err: any, result: any) {
         if (err) throw err;
-        res.json({
-            result
-        })
+        Phone.findOneAndUpdate({ "_id" : phoneId},
+        { $set: { "valoraciones.avg_cpu" : Math.round(result[0].average) } },{new: true}, (err, phoneDB) => {
+                if (err) throw err;
 
+                if (!phoneDB) {
+                    return res.json({
+                        ok: false,
+                        mensaje: 'No existe un movil con ese ID'
+                    });
+                }
+
+                res.json({
+                    ok: true,
+                    result,
+                    phone: phoneDB
+                });
+
+            });
     });
 
 });
@@ -106,36 +168,67 @@ ratingsRoutes.get('/cpu/:phoneId', async (req: Request, res: Response) => {
 //Obtener phones top bateria
 ratingsRoutes.get('/bateria/:phoneId', async (req: Request, res: Response) => {
 
+    const phoneId = req.params.phoneId;
     await Ratings.aggregate([
-        { $match: { phone: ObjectId(`${req.params.phoneId}`) } },
+        { $match: { phone: ObjectId(`${phoneId}`) } },
         { $group: { _id: null, average: { $avg: '$val_bateria' } } }
     ], function (err: any, result: any) {
         if (err) throw err;
-        res.json({
-            result
-        })
+        Phone.findOneAndUpdate({ "_id" : phoneId},
+        { $set: { "valoraciones.avg_bateria" : Math.round(result[0].average) } },{new: true}, (err, phoneDB) => {
+                if (err) throw err;
+
+                if (!phoneDB) {
+                    return res.json({
+                        ok: false,
+                        mensaje: 'No existe un movil con ese ID'
+                    });
+                }
+
+                res.json({
+                    ok: true,
+                    result,
+                    phone: phoneDB
+                });
+
+            });
     });
 
 
 });
 
-//Obtener phones top pantalla
+//Obtener media ratings de pantalla y modificar media de ratings de pantalla en phone
 ratingsRoutes.get('/pantalla/:phoneId', async (req: Request, res: Response) => {
 
+
+    const phoneId = req.params.phoneId;
     await Ratings.aggregate([
-        { $match: { phone: ObjectId(`${req.params.phoneId}`) } },
+        { $match: { phone: ObjectId(`${phoneId}`) } },
         { $group: { _id: null, average: { $avg: '$val_pantalla' } } }
     ], function (err: any, result: any) {
         if (err) throw err;
-        res.json({
-            result
-        })
+        Phone.findOneAndUpdate({ "_id" : phoneId},
+            { $set: { "valoraciones.avg_pantalla" : Math.round(result[0].average) } },{new: true}, (err, phoneDB) => {
+                if (err) throw err;
+
+                if (!phoneDB) {
+                    return res.json({
+                        ok: false,
+                        mensaje: 'No existe un movil con ese ID'
+                    });
+                }
+
+                res.json({
+                    ok: true,
+                    result,
+                    phone: phoneDB
+                });
+
+            });
     });
 
 
 });
-
-
 
 // Trae los rating de determinado movil
 ratingsRoutes.get('/:phoneId', async (req, res) => {
@@ -210,5 +303,12 @@ ratingsRoutes.patch('/:ratingsId', [verificaToken], async (req: Request, res: Re
 
         });
 });
+
+async function updatePhoneRating(body: any) {
+
+
+
+}
+
 
 export default ratingsRoutes;

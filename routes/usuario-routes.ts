@@ -52,6 +52,7 @@ userRoutes.post('/login', (req: Request, res: Response) => {
 
 //Crear un usuario
 userRoutes.post('/create', (req: Request, res: Response) => {
+    
 
     if (!req.body.email || !req.body.password) {
         return res.status(400).json({ 'msg': 'Necesitas especificar un nombre de usuario y una contraseña' });
@@ -126,7 +127,6 @@ userRoutes.post('/update', verificaToken, (req: Request, res: Response) => {
 userRoutes.get('/', [verificaToken], (req: any, res: Response) => {
 
     const usuario = req.usuario;
-
     res.json({
         ok: true,
         usuario

@@ -9,9 +9,9 @@ var config = require('./config');
 var Token = /** @class */ (function () {
     function Token() {
     }
-    Token.getJwtToken = function (user) {
+    Token.getJwtToken = function (payload) {
         return jsonwebtoken_1.default.sign({
-            id: user._id, email: user.email
+            usuario: payload,
         }, this.seed, { expiresIn: this.caducidad });
     };
     Token.comprobarToken = function (userToken) {

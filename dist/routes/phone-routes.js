@@ -43,6 +43,8 @@ var express_1 = require("express");
 var autenticacion_1 = require("../middlewares/autenticacion");
 var phones_model_1 = require("../models/phones.model");
 var file_system_1 = __importDefault(require("../classes/file-system"));
+var mongoose_1 = __importDefault(require("mongoose"));
+var ObjectId = mongoose_1.default.Types.ObjectId;
 var phonesRoutes = express_1.Router();
 var fileSystem = new file_system_1.default();
 //Obtener últimos Moviles
@@ -62,7 +64,6 @@ phonesRoutes.get('/latest', function (req, res) { return __awaiter(_this, void 0
             case 1:
                 phones = _a.sent();
                 res.json({
-                    ok: true,
                     pagina: pagina,
                     phones: phones
                 });
@@ -70,9 +71,324 @@ phonesRoutes.get('/latest', function (req, res) { return __awaiter(_this, void 0
         }
     });
 }); });
+//Obtener moviles ordenados por  mejor camara
+phonesRoutes.get('/camara', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+    var pagina, skip, err_1;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                pagina = Number(req.query.pagina) || 1;
+                skip = pagina - 1;
+                skip = skip * 10;
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, phones_model_1.Phone.aggregate([{
+                            $project: {
+                                _id: 1,
+                                marca: 1,
+                                modelo: 1,
+                                img: 1,
+                                fechaLanzamiento: 1,
+                                camara: 1,
+                                pantalla: 1,
+                                cpu: 1,
+                                ram: 1,
+                                almacenamiento: 1,
+                                bateria: 1,
+                                num_positivos: 1,
+                                num_negativos: 11,
+                                valoraciones: 1,
+                            },
+                        },
+                        {
+                            $sort: {
+                                "valoraciones.avg_camara": -1
+                            }
+                        },
+                        {
+                            $skip: skip
+                        },
+                        {
+                            $limit: 10
+                        }
+                    ], function (err, phones) {
+                        if (err)
+                            throw err;
+                        res.json({
+                            pagina: pagina,
+                            phones: phones
+                        });
+                    })];
+            case 2:
+                _a.sent();
+                return [3 /*break*/, 4];
+            case 3:
+                err_1 = _a.sent();
+                res.json({
+                    ok: false,
+                    message: err_1
+                });
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
+//Obtener últimos Moviles
+phonesRoutes.get('/pantalla', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+    var pagina, skip, err_2;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                pagina = Number(req.query.pagina) || 1;
+                skip = pagina - 1;
+                skip = skip * 10;
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, phones_model_1.Phone.aggregate([{
+                            $project: {
+                                _id: 1,
+                                marca: 1,
+                                modelo: 1,
+                                img: 1,
+                                fechaLanzamiento: 1,
+                                camara: 1,
+                                pantalla: 1,
+                                cpu: 1,
+                                ram: 1,
+                                almacenamiento: 1,
+                                bateria: 1,
+                                num_positivos: 1,
+                                num_negativos: 11,
+                                valoraciones: 1,
+                            },
+                        },
+                        {
+                            $sort: {
+                                "valoraciones.avg_pantalla": -1
+                            }
+                        },
+                        {
+                            $skip: skip
+                        },
+                        {
+                            $limit: 10
+                        }
+                    ], function (err, phones) {
+                        if (err)
+                            throw err;
+                        res.json({
+                            pagina: pagina,
+                            phones: phones
+                        });
+                    })];
+            case 2:
+                _a.sent();
+                return [3 /*break*/, 4];
+            case 3:
+                err_2 = _a.sent();
+                res.json({
+                    ok: false,
+                    message: err_2
+                });
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
+//Obtener últimos Moviles
+phonesRoutes.get('/cpu', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+    var pagina, skip, err_3;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                pagina = Number(req.query.pagina) || 1;
+                skip = pagina - 1;
+                skip = skip * 10;
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, phones_model_1.Phone.aggregate([{
+                            $project: {
+                                _id: 1,
+                                marca: 1,
+                                modelo: 1,
+                                img: 1,
+                                fechaLanzamiento: 1,
+                                camara: 1,
+                                pantalla: 1,
+                                cpu: 1,
+                                ram: 1,
+                                almacenamiento: 1,
+                                bateria: 1,
+                                num_positivos: 1,
+                                num_negativos: 11,
+                                valoraciones: 1,
+                            },
+                        },
+                        {
+                            $sort: {
+                                "valoraciones.avg_cpu": -1
+                            }
+                        },
+                        {
+                            $skip: skip
+                        },
+                        {
+                            $limit: 10
+                        }
+                    ], function (err, phones) {
+                        if (err)
+                            throw err;
+                        res.json({
+                            pagina: pagina,
+                            phones: phones
+                        });
+                    })];
+            case 2:
+                _a.sent();
+                return [3 /*break*/, 4];
+            case 3:
+                err_3 = _a.sent();
+                res.json({
+                    ok: false,
+                    message: err_3
+                });
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
+//Obtener moviles por bateria
+phonesRoutes.get('/bateria', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+    var pagina, skip, err_4;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                pagina = Number(req.query.pagina) || 1;
+                skip = pagina - 1;
+                skip = skip * 10;
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, phones_model_1.Phone.aggregate([{
+                            $project: {
+                                _id: 1,
+                                marca: 1,
+                                modelo: 1,
+                                img: 1,
+                                fechaLanzamiento: 1,
+                                camara: 1,
+                                pantalla: 1,
+                                cpu: 1,
+                                ram: 1,
+                                almacenamiento: 1,
+                                bateria: 1,
+                                num_positivos: 1,
+                                num_negativos: 11,
+                                valoraciones: 1,
+                            },
+                        },
+                        {
+                            $sort: {
+                                "valoraciones.avg_bateria": -1
+                            }
+                        },
+                        {
+                            $skip: skip
+                        },
+                        {
+                            $limit: 10
+                        }
+                    ], function (err, phones) {
+                        if (err)
+                            throw err;
+                        res.json({
+                            pagina: pagina,
+                            phones: phones
+                        });
+                    })];
+            case 2:
+                _a.sent();
+                return [3 /*break*/, 4];
+            case 3:
+                err_4 = _a.sent();
+                res.json({
+                    ok: false,
+                    message: err_4
+                });
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
+//Obtener moviles por aspecto
+phonesRoutes.get('/aspecto', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+    var pagina, skip, err_5;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                pagina = Number(req.query.pagina) || 1;
+                skip = pagina - 1;
+                skip = skip * 10;
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, phones_model_1.Phone.aggregate([{
+                            $project: {
+                                _id: 1,
+                                marca: 1,
+                                modelo: 1,
+                                img: 1,
+                                fechaLanzamiento: 1,
+                                camara: 1,
+                                pantalla: 1,
+                                cpu: 1,
+                                ram: 1,
+                                almacenamiento: 1,
+                                bateria: 1,
+                                num_positivos: 1,
+                                num_negativos: 11,
+                                valoraciones: 1,
+                            },
+                        },
+                        {
+                            $sort: {
+                                "valoraciones.avg_aspecto": -1
+                            }
+                        },
+                        {
+                            $skip: skip
+                        },
+                        {
+                            $limit: 10
+                        }
+                    ], function (err, phones) {
+                        if (err)
+                            throw err;
+                        res.json({
+                            pagina: pagina,
+                            phones: phones
+                        });
+                    })];
+            case 2:
+                _a.sent();
+                return [3 /*break*/, 4];
+            case 3:
+                err_5 = _a.sent();
+                res.json({
+                    ok: false,
+                    message: err_5
+                });
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
 //Obtener Moviles mas likes
 phonesRoutes.get('/likes', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-    var pagina, skip, phones, err_1;
+    var pagina, skip, phones, err_6;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -88,16 +404,15 @@ phonesRoutes.get('/likes', function (req, res) { return __awaiter(_this, void 0,
             case 1:
                 phones = _a.sent();
                 res.json({
-                    ok: true,
                     pagina: pagina,
                     phones: phones
                 });
                 return [3 /*break*/, 3];
             case 2:
-                err_1 = _a.sent();
+                err_6 = _a.sent();
                 res.json({
                     ok: false,
-                    message: err_1
+                    message: err_6
                 });
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];
@@ -105,7 +420,7 @@ phonesRoutes.get('/likes', function (req, res) { return __awaiter(_this, void 0,
     });
 }); });
 phonesRoutes.get('/dislikes', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-    var pagina, skip, phones, err_2;
+    var pagina, skip, phones, err_7;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -121,16 +436,15 @@ phonesRoutes.get('/dislikes', function (req, res) { return __awaiter(_this, void
             case 1:
                 phones = _a.sent();
                 res.json({
-                    ok: true,
                     pagina: pagina,
                     phones: phones
                 });
                 return [3 /*break*/, 3];
             case 2:
-                err_2 = _a.sent();
+                err_7 = _a.sent();
                 res.json({
                     ok: false,
-                    message: err_2
+                    message: err_7
                 });
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];
@@ -139,7 +453,7 @@ phonesRoutes.get('/dislikes', function (req, res) { return __awaiter(_this, void
 }); });
 //Obtener Moviles más populares
 phonesRoutes.get('/popular', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-    var pagina, skip, phones, err_3;
+    var pagina, skip, err_8;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -151,31 +465,101 @@ phonesRoutes.get('/popular', function (req, res) { return __awaiter(_this, void 
                 _a.trys.push([1, 3, , 4]);
                 return [4 /*yield*/, phones_model_1.Phone.aggregate([{
                             $project: {
+                                _id: 1,
                                 marca: 1,
                                 modelo: 1,
                                 img: 1,
                                 fechaLanzamiento: 1,
-                                total: { $subtract: ["$num_positivos", "$num_negativos"] },
+                                camara: 1,
+                                pantalla: 1,
+                                cpu: 1,
+                                ram: 1,
+                                almacenamiento: 1,
+                                bateria: 1,
+                                num_positivos: 1,
+                                num_negativos: 11,
+                                valoraciones: 1,
+                                total: { $avg: ["$valoraciones.avg_pantalla", "$valoraciones.avg_cpu", "$valoraciones.avg_bateria", "$valoraciones.avg_aspecto", "$valoraciones.avg_camara"] }
+                            },
+                        },
+                        {
+                            $sort: {
+                                "total": -1
                             }
-                        }])
-                        .match({ total: { $lt: 0 } })
-                        .sort({ total: -1 })
-                        .skip(10)
-                        .limit(10)
-                        .exec()];
+                        },
+                        {
+                            $skip: skip
+                        },
+                        {
+                            $limit: 10
+                        }
+                    ], function (err, phones) {
+                        if (err)
+                            throw err;
+                        res.json({
+                            pagina: pagina,
+                            phones: phones
+                        });
+                    })];
             case 2:
-                phones = _a.sent();
-                res.json({
-                    ok: true,
-                    pagina: pagina,
-                    phones: phones
-                });
+                _a.sent();
                 return [3 /*break*/, 4];
             case 3:
-                err_3 = _a.sent();
+                err_8 = _a.sent();
                 res.json({
                     ok: false,
-                    message: err_3
+                    message: err_8
+                });
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
+//NO FUNCIONA
+phonesRoutes.get('/avg/:phoneId', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+    var phoneId, pagina, skip, phones, err_9;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                phoneId = req.params.phoneId;
+                pagina = Number(req.query.pagina) || 1;
+                skip = pagina - 1;
+                skip = skip * 10;
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, phones_model_1.Phone.aggregate([
+                        { $match: { _id: ObjectId('5cd8a21738e3f73e4cedc10c') } },
+                        {
+                            $project: {
+                                marca: "$marca",
+                                modelo: "$modelo",
+                                pantalla: "$valoraciones.avg_pantalla",
+                                camara: "$valoraciones.avg_camara",
+                                cpu: "$valoraciones.avg_cpu",
+                                bateria: "$valoraciones.avg_bateria",
+                                aspecto: "$valoraciones.avg_aspecto",
+                                sumaAvgs: { $sum: ["$valoraciones.avg_pantalla", "$valoraciones.avg_bateria", "$valoraciones.avg_camara", "$valoraciones.avg_cpu", "$valoraciones.avg_aspecto"] }
+                            }
+                        },
+                        { $group: { _id: { _id: "$_id" }, avgTotal: { $avg: "$sumaAvgs" } } }
+                    ], function (err, phones) {
+                        if (err)
+                            throw err;
+                        res.json({
+                            ok: true,
+                            pagina: pagina,
+                            phones: phones
+                        });
+                    })];
+            case 2:
+                phones = _a.sent();
+                return [3 /*break*/, 4];
+            case 3:
+                err_9 = _a.sent();
+                res.json({
+                    ok: false,
+                    message: err_9
                 });
                 return [3 /*break*/, 4];
             case 4: return [2 /*return*/];
@@ -198,9 +582,9 @@ phonesRoutes.post('/', [autenticacion_1.verificaToken], function (req, res) {
         });
     });
 });
-//Specific phone
+//Buscar movil por Id
 phonesRoutes.get('/:phoneId', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-    var phone, err_4;
+    var phone, err_10;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -211,10 +595,10 @@ phonesRoutes.get('/:phoneId', function (req, res) { return __awaiter(_this, void
                 res.json(phone);
                 return [3 /*break*/, 3];
             case 2:
-                err_4 = _a.sent();
+                err_10 = _a.sent();
                 res.json({
                     ok: false,
-                    message: err_4
+                    message: err_10
                 });
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];
@@ -222,62 +606,54 @@ phonesRoutes.get('/:phoneId', function (req, res) { return __awaiter(_this, void
     });
 }); });
 //Buscar por Marca
-phonesRoutes.post('/buscar/marca', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-    var pagina, skip, query;
-    return __generator(this, function (_a) {
-        pagina = Number(req.query.pagina) || 1;
-        skip = pagina - 1;
-        skip = skip * 10;
-        query = req.body.query;
-        phones_model_1.Phone.find({
-            marca: {
-                $regex: new RegExp(query)
-            }
-        }, function (err, phones) {
-            if (err)
-                throw res.json({ ok: false, err: err, mensaje: "No se encontró ningún resultado" });
-            res.json({
-                ok: true,
-                pagina: pagina,
-                phones: phones
-            });
-        })
-            .skip(skip)
-            .sort({ marca: -1 })
-            .limit(10);
-        return [2 /*return*/];
-    });
-}); });
+phonesRoutes.post('/buscar/marca', function (req, res) {
+    var pagina = Number(req.query.pagina) || 1;
+    var skip = pagina - 1;
+    skip = skip * 10;
+    var query = req.body.query;
+    phones_model_1.Phone.find({
+        marca: {
+            $regex: new RegExp(query)
+        }
+    }, function (err, phones) {
+        if (err)
+            throw res.json({ ok: false, err: err, mensaje: "No se encontró ningún resultado" });
+        res.json({
+            ok: true,
+            pagina: pagina,
+            phones: phones
+        });
+    })
+        .skip(skip)
+        .sort({ marca: -1 })
+        .limit(10);
+});
 //Buscar por Modelo
-phonesRoutes.post('/buscar/modelo', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-    var pagina, skip, query;
-    return __generator(this, function (_a) {
-        pagina = Number(req.query.pagina) || 1;
-        skip = pagina - 1;
-        skip = skip * 10;
-        query = req.body.query;
-        phones_model_1.Phone.find({
-            modelo: {
-                $regex: new RegExp(query)
-            }
-        }, function (err, phones) {
-            if (err)
-                throw res.json({ ok: false, err: err, mensaje: "No se encontró ningún resultado" });
-            res.json({
-                ok: true,
-                pagina: pagina,
-                phones: phones
-            });
-        })
-            .skip(skip)
-            .sort({ marca: -1 })
-            .limit(10);
-        return [2 /*return*/];
-    });
-}); });
+phonesRoutes.post('/buscar/modelo', function (req, res) {
+    var pagina = Number(req.query.pagina) || 1;
+    var skip = pagina - 1;
+    skip = skip * 10;
+    var query = req.body.query;
+    phones_model_1.Phone.find({
+        modelo: {
+            $regex: new RegExp(query)
+        }
+    }, function (err, phones) {
+        if (err)
+            throw res.json({ ok: false, err: err, mensaje: "No se encontró ningún resultado" });
+        res.json({
+            ok: true,
+            pagina: pagina,
+            phones: phones
+        });
+    })
+        .skip(skip)
+        .sort({ marca: -1 })
+        .limit(10);
+});
 //Delete phone
 phonesRoutes.delete('/:phoneId', [autenticacion_1.verificaToken], function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-    var phoneId, removedPhone, err_5;
+    var phoneId, phone, err_11;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -289,17 +665,17 @@ phonesRoutes.delete('/:phoneId', [autenticacion_1.verificaToken], function (req,
                         _id: phoneId
                     })];
             case 2:
-                removedPhone = _a.sent();
+                phone = _a.sent();
                 return [4 /*yield*/, fileSystem.borrarCapetaMovil(phoneId)];
             case 3:
                 _a.sent();
-                res.json(removedPhone);
+                res.json(phone);
                 return [3 /*break*/, 5];
             case 4:
-                err_5 = _a.sent();
+                err_11 = _a.sent();
                 res.json({
                     ok: false,
-                    message: err_5
+                    message: err_11
                 });
                 return [3 /*break*/, 5];
             case 5: return [2 /*return*/];
@@ -308,7 +684,7 @@ phonesRoutes.delete('/:phoneId', [autenticacion_1.verificaToken], function (req,
 }); });
 //Update a phone
 phonesRoutes.patch('/:phoneId', [autenticacion_1.verificaToken], function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-    var updatePhone, err_6;
+    var phone, err_12;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -330,14 +706,14 @@ phonesRoutes.patch('/:phoneId', [autenticacion_1.verificaToken], function (req, 
                         }
                     })];
             case 1:
-                updatePhone = _a.sent();
-                res.json(updatePhone);
+                phone = _a.sent();
+                res.json(phone);
                 return [3 /*break*/, 3];
             case 2:
-                err_6 = _a.sent();
+                err_12 = _a.sent();
                 res.json({
                     ok: false,
-                    message: err_6
+                    message: err_12
                 });
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];

@@ -43,6 +43,7 @@ var express_1 = require("express");
 var autenticacion_1 = require("../middlewares/autenticacion");
 var ratings_model_1 = require("../models/ratings.model");
 var mongoose_1 = __importDefault(require("mongoose"));
+var phones_model_1 = require("../models/phones.model");
 var ObjectId = mongoose_1.default.Types.ObjectId;
 var ratingsRoutes = express_1.Router();
 //Obtener todos los ratings
@@ -77,6 +78,8 @@ ratingsRoutes.post('/', [autenticacion_1.verificaToken], function (req, res) {
     var body = req.body;
     body.usuario = req.usuario._id;
     body.phone = req.body.phone;
+    var positivo = body.positivo;
+    var negativo = body.negativo;
     ratings_model_1.Ratings.create(body).then(function (ratingsDB) { return __awaiter(_this, void 0, void 0, function () {
         var rating;
         return __generator(this, function (_a) {
@@ -84,6 +87,17 @@ ratingsRoutes.post('/', [autenticacion_1.verificaToken], function (req, res) {
                 case 0: return [4 /*yield*/, ratingsDB.populate('usuario').populate('phone').execPopulate()];
                 case 1:
                     rating = _a.sent();
+                    if (!positivo) return [3 /*break*/, 3];
+                    return [4 /*yield*/, phones_model_1.Phone.update({ _id: body.phone }, { $inc: { num_positivos: 1 } })];
+                case 2:
+                    _a.sent();
+                    return [3 /*break*/, 4];
+                case 3:
+                    if (negativo) {
+                        phones_model_1.Phone.update({ _id: body.phone }, { $inc: { num_negativos: 1 } });
+                    }
+                    _a.label = 4;
+                case 4:
                     res.json({
                         ok: true,
                         rating: rating
@@ -91,27 +105,37 @@ ratingsRoutes.post('/', [autenticacion_1.verificaToken], function (req, res) {
                     return [2 /*return*/];
             }
         });
-    }); }).catch(function (err) {
-        res.json({
-            ok: false,
-            err: err
-        });
-    });
+    }); });
 });
 //Obtener phones top camra
 ratingsRoutes.get('/camara/:phoneId', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+    var phoneId;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, ratings_model_1.Ratings.aggregate([
-                    { $match: { phone: ObjectId("" + req.params.phoneId) } },
-                    { $group: { _id: null, average: { $avg: '$val_camara' } } }
-                ], function (err, result) {
-                    if (err)
-                        throw err;
-                    res.json({
-                        result: result
-                    });
-                })];
+            case 0:
+                phoneId = req.params.phoneId;
+                return [4 /*yield*/, ratings_model_1.Ratings.aggregate([
+                        { $match: { phone: ObjectId("" + phoneId) } },
+                        { $group: { _id: { _id: "$phone" }, average: { $avg: '$val_camara' } } }
+                    ], function (err, result) {
+                        if (err)
+                            throw err;
+                        phones_model_1.Phone.findOneAndUpdate({ "_id": phoneId }, { $set: { "valoraciones.avg_camara": Math.round(result[0].average) } }, { new: true }, function (err, phoneDB) {
+                            if (err)
+                                throw err;
+                            if (!phoneDB) {
+                                return res.json({
+                                    ok: false,
+                                    mensaje: 'No existe un movil con ese ID'
+                                });
+                            }
+                            res.json({
+                                ok: true,
+                                result: result,
+                                phone: phoneDB
+                            });
+                        });
+                    })];
             case 1:
                 _a.sent();
                 return [2 /*return*/];
@@ -120,18 +144,33 @@ ratingsRoutes.get('/camara/:phoneId', function (req, res) { return __awaiter(_th
 }); });
 //Obtener phones top diseño
 ratingsRoutes.get('/aspecto/:phoneId', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+    var phoneId;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, ratings_model_1.Ratings.aggregate([
-                    { $match: { phone: ObjectId("" + req.params.phoneId) } },
-                    { $group: { _id: "$marca", average: { $avg: '$val_aspecto' } } }
-                ], function (err, result) {
-                    if (err)
-                        throw err;
-                    res.json({
-                        result: result
-                    });
-                })];
+            case 0:
+                phoneId = req.params.phoneId;
+                return [4 /*yield*/, ratings_model_1.Ratings.aggregate([
+                        { $match: { phone: ObjectId("" + phoneId) } },
+                        { $group: { _id: null, average: { $avg: '$val_aspecto' } } }
+                    ], function (err, result) {
+                        if (err)
+                            throw err;
+                        phones_model_1.Phone.findOneAndUpdate({ "_id": phoneId }, { $set: { "valoraciones.avg_aspecto": Math.round(result[0].average) } }, { new: true }, function (err, phoneDB) {
+                            if (err)
+                                throw err;
+                            if (!phoneDB) {
+                                return res.json({
+                                    ok: false,
+                                    mensaje: 'No existe un movil con ese ID'
+                                });
+                            }
+                            res.json({
+                                ok: true,
+                                result: result,
+                                phone: phoneDB
+                            });
+                        });
+                    })];
             case 1:
                 _a.sent();
                 return [2 /*return*/];
@@ -140,18 +179,33 @@ ratingsRoutes.get('/aspecto/:phoneId', function (req, res) { return __awaiter(_t
 }); });
 //Obtener phones top cpu
 ratingsRoutes.get('/cpu/:phoneId', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+    var phoneId;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, ratings_model_1.Ratings.aggregate([
-                    { $match: { phone: ObjectId("" + req.params.phoneId) } },
-                    { $group: { _id: null, average: { $avg: '$val_cpu' } } }
-                ], function (err, result) {
-                    if (err)
-                        throw err;
-                    res.json({
-                        result: result
-                    });
-                })];
+            case 0:
+                phoneId = req.params.phoneId;
+                return [4 /*yield*/, ratings_model_1.Ratings.aggregate([
+                        { $match: { phone: ObjectId("" + phoneId) } },
+                        { $group: { _id: null, average: { $avg: '$val_cpu' } } }
+                    ], function (err, result) {
+                        if (err)
+                            throw err;
+                        phones_model_1.Phone.findOneAndUpdate({ "_id": phoneId }, { $set: { "valoraciones.avg_cpu": Math.round(result[0].average) } }, { new: true }, function (err, phoneDB) {
+                            if (err)
+                                throw err;
+                            if (!phoneDB) {
+                                return res.json({
+                                    ok: false,
+                                    mensaje: 'No existe un movil con ese ID'
+                                });
+                            }
+                            res.json({
+                                ok: true,
+                                result: result,
+                                phone: phoneDB
+                            });
+                        });
+                    })];
             case 1:
                 _a.sent();
                 return [2 /*return*/];
@@ -160,38 +214,68 @@ ratingsRoutes.get('/cpu/:phoneId', function (req, res) { return __awaiter(_this,
 }); });
 //Obtener phones top bateria
 ratingsRoutes.get('/bateria/:phoneId', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+    var phoneId;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, ratings_model_1.Ratings.aggregate([
-                    { $match: { phone: ObjectId("" + req.params.phoneId) } },
-                    { $group: { _id: null, average: { $avg: '$val_bateria' } } }
-                ], function (err, result) {
-                    if (err)
-                        throw err;
-                    res.json({
-                        result: result
-                    });
-                })];
+            case 0:
+                phoneId = req.params.phoneId;
+                return [4 /*yield*/, ratings_model_1.Ratings.aggregate([
+                        { $match: { phone: ObjectId("" + phoneId) } },
+                        { $group: { _id: null, average: { $avg: '$val_bateria' } } }
+                    ], function (err, result) {
+                        if (err)
+                            throw err;
+                        phones_model_1.Phone.findOneAndUpdate({ "_id": phoneId }, { $set: { "valoraciones.avg_bateria": Math.round(result[0].average) } }, { new: true }, function (err, phoneDB) {
+                            if (err)
+                                throw err;
+                            if (!phoneDB) {
+                                return res.json({
+                                    ok: false,
+                                    mensaje: 'No existe un movil con ese ID'
+                                });
+                            }
+                            res.json({
+                                ok: true,
+                                result: result,
+                                phone: phoneDB
+                            });
+                        });
+                    })];
             case 1:
                 _a.sent();
                 return [2 /*return*/];
         }
     });
 }); });
-//Obtener phones top pantalla
+//Obtener media ratings de pantalla y modificar media de ratings de pantalla en phone
 ratingsRoutes.get('/pantalla/:phoneId', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+    var phoneId;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, ratings_model_1.Ratings.aggregate([
-                    { $match: { phone: ObjectId("" + req.params.phoneId) } },
-                    { $group: { _id: null, average: { $avg: '$val_pantalla' } } }
-                ], function (err, result) {
-                    if (err)
-                        throw err;
-                    res.json({
-                        result: result
-                    });
-                })];
+            case 0:
+                phoneId = req.params.phoneId;
+                return [4 /*yield*/, ratings_model_1.Ratings.aggregate([
+                        { $match: { phone: ObjectId("" + phoneId) } },
+                        { $group: { _id: null, average: { $avg: '$val_pantalla' } } }
+                    ], function (err, result) {
+                        if (err)
+                            throw err;
+                        phones_model_1.Phone.findOneAndUpdate({ "_id": phoneId }, { $set: { "valoraciones.avg_pantalla": Math.round(result[0].average) } }, { new: true }, function (err, phoneDB) {
+                            if (err)
+                                throw err;
+                            if (!phoneDB) {
+                                return res.json({
+                                    ok: false,
+                                    mensaje: 'No existe un movil con ese ID'
+                                });
+                            }
+                            res.json({
+                                ok: true,
+                                result: result,
+                                phone: phoneDB
+                            });
+                        });
+                    })];
             case 1:
                 _a.sent();
                 return [2 /*return*/];
@@ -294,4 +378,11 @@ ratingsRoutes.patch('/:ratingsId', [autenticacion_1.verificaToken], function (re
         }
     });
 }); });
+function updatePhoneRating(body) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            return [2 /*return*/];
+        });
+    });
+}
 exports.default = ratingsRoutes;

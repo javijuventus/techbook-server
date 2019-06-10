@@ -12,10 +12,10 @@ export default class Token {
 
     constructor() { }
 
-    static getJwtToken(user: any): string {
+    static getJwtToken(payload: any): string {
 
         return jwt.sign({
-            id: user._id, email: user.email
+            usuario: payload,
         }, this.seed, { expiresIn: this.caducidad });
     }
 

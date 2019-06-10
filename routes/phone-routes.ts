@@ -2,6 +2,8 @@ import { Router, Request, Response } from "express";
 import { verificaToken } from '../middlewares/autenticacion';
 import { Phone } from "../models/phones.model";
 import FileSystem from '../classes/file-system';
+import mongoose from 'mongoose';
+const ObjectId = mongoose.Types.ObjectId;
 
 const phonesRoutes = Router();
 const fileSystem = new FileSystem();
@@ -21,10 +23,292 @@ phonesRoutes.get('/latest', async (req: Request, res: Response) => {
         .exec()
 
     res.json({
-        ok: true,
         pagina,
         phones
     })
+});
+//Obtener moviles ordenados por  mejor camara
+phonesRoutes.get('/camara', async (req: Request, res: Response) => {
+
+    let pagina = Number(req.query.pagina) || 1;
+    let skip = pagina - 1;
+    skip = skip * 10;
+
+    try {
+        await Phone.aggregate(
+            [{
+                $project: {
+                    _id:1,
+                    marca: 1,
+                    modelo: 1,
+                    img: 1,
+                    fechaLanzamiento: 1,
+                    camara:1,
+                    pantalla:1,
+                    cpu:1,
+                    ram:1,
+                    almacenamiento:1,
+                    bateria:1,
+                    num_positivos:1,
+                    num_negativos:11,
+                    valoraciones: 1,
+                },
+
+            },
+            {
+                $sort: {
+                    "valoraciones.avg_camara": -1
+                }
+            },
+            {
+                $skip:skip
+            },
+            {
+                $limit:10
+            }
+            
+
+            ], function (err: any, phones: any) {
+                if (err) throw err;
+
+                res.json({
+                    pagina,
+                    phones
+                });
+            })
+    } catch (err) {
+        res.json({
+            ok: false,
+            message: err
+        });
+    }
+});
+//Obtener últimos Moviles
+phonesRoutes.get('/pantalla', async (req: Request, res: Response) => {
+
+
+    let pagina = Number(req.query.pagina) || 1;
+    let skip = pagina - 1;
+    skip = skip * 10;
+
+    try {
+        await Phone.aggregate(
+            [{
+                $project: {
+                    _id:1,
+                    marca: 1,
+                    modelo: 1,
+                    img: 1,
+                    fechaLanzamiento: 1,
+                    camara:1,
+                    pantalla:1,
+                    cpu:1,
+                    ram:1,
+                    almacenamiento:1,
+                    bateria:1,
+                    num_positivos:1,
+                    num_negativos:11,
+                    valoraciones: 1,
+                },
+
+            },
+            {
+                $sort: {
+                    "valoraciones.avg_pantalla": -1
+                }
+            },
+            {
+                $skip:skip
+            },
+            {
+                $limit:10
+            }
+            
+
+            ], function (err: any, phones: any) {
+                if (err) throw err;
+
+                res.json({
+                    pagina,
+                    phones
+                });
+            })
+    } catch (err) {
+        res.json({
+            ok: false,
+            message: err
+        });
+    }
+});
+//Obtener últimos Moviles
+phonesRoutes.get('/cpu', async (req: Request, res: Response) => {
+
+
+    let pagina = Number(req.query.pagina) || 1;
+    let skip = pagina - 1;
+    skip = skip * 10;
+
+    try {
+        await Phone.aggregate(
+            [{
+                $project: {
+                    _id:1,
+                    marca: 1,
+                    modelo: 1,
+                    img: 1,
+                    fechaLanzamiento: 1,
+                    camara:1,
+                    pantalla:1,
+                    cpu:1,
+                    ram:1,
+                    almacenamiento:1,
+                    bateria:1,
+                    num_positivos:1,
+                    num_negativos:11,
+                    valoraciones: 1,
+                },
+
+            },
+            {
+                $sort: {
+                    "valoraciones.avg_cpu": -1
+                }
+            },
+            {
+                $skip:skip
+            },
+            {
+                $limit:10
+            }
+            
+
+            ], function (err: any, phones: any) {
+                if (err) throw err;
+
+                res.json({
+                    pagina,
+                    phones
+                });
+            })
+    } catch (err) {
+        res.json({
+            ok: false,
+            message: err
+        });
+    }
+});
+//Obtener moviles por bateria
+phonesRoutes.get('/bateria', async (req: Request, res: Response) => {
+
+
+    let pagina = Number(req.query.pagina) || 1;
+    let skip = pagina - 1;
+    skip = skip * 10;
+
+    try {
+        await Phone.aggregate(
+            [{
+                $project: {
+                    _id:1,
+                    marca: 1,
+                    modelo: 1,
+                    img: 1,
+                    fechaLanzamiento: 1,
+                    camara:1,
+                    pantalla:1,
+                    cpu:1,
+                    ram:1,
+                    almacenamiento:1,
+                    bateria:1,
+                    num_positivos:1,
+                    num_negativos:11,
+                    valoraciones: 1,
+                },
+
+            },
+            {
+                $sort: {
+                    "valoraciones.avg_bateria": -1
+                }
+            },
+            {
+                $skip:skip
+            },
+            {
+                $limit:10
+            }
+            
+
+            ], function (err: any, phones: any) {
+                if (err) throw err;
+
+                res.json({
+                    pagina,
+                    phones
+                });
+            })
+    } catch (err) {
+        res.json({
+            ok: false,
+            message: err
+        });
+    }
+});
+//Obtener moviles por aspecto
+phonesRoutes.get('/aspecto', async (req: Request, res: Response) => {
+
+    let pagina = Number(req.query.pagina) || 1;
+    let skip = pagina - 1;
+    skip = skip * 10;
+
+    try {
+        await Phone.aggregate(
+            [{
+                $project: {
+                    _id:1,
+                    marca: 1,
+                    modelo: 1,
+                    img: 1,
+                    fechaLanzamiento: 1,
+                    camara:1,
+                    pantalla:1,
+                    cpu:1,
+                    ram:1,
+                    almacenamiento:1,
+                    bateria:1,
+                    num_positivos:1,
+                    num_negativos:11,
+                    valoraciones: 1,
+                },
+
+            },
+            {
+                $sort: {
+                    "valoraciones.avg_aspecto": -1
+                }
+            },
+            {
+                $skip:skip
+            },
+            {
+                $limit:10
+            }
+            
+
+            ], function (err: any, phones: any) {
+                if (err) throw err;
+
+                res.json({
+                    pagina,
+                    phones
+                });
+            })
+    } catch (err) {
+        res.json({
+            ok: false,
+            message: err
+        });
+    }
 });
 
 
@@ -36,15 +320,14 @@ phonesRoutes.get('/likes', async (req: Request, res: Response) => {
         let pagina = Number(req.query.pagina) || 1;
         let skip = pagina - 1;
         skip = skip * 10;
-    
+
         const phones = await Phone.find()
             .sort({ num_positivos: -1 }) //Ordena por ID de forma descendiente
             .skip(skip)
             .limit(10)
             .exec()
-    
+
         res.json({
-            ok: true,
             pagina,
             phones
         })
@@ -63,15 +346,14 @@ phonesRoutes.get('/dislikes', async (req: Request, res: Response) => {
         let pagina = Number(req.query.pagina) || 1;
         let skip = pagina - 1;
         skip = skip * 10;
-    
+
         const phones = await Phone.find()
             .sort({ num_negativos: -1 }) //Ordena por ID de forma descendiente
             .skip(skip)
             .limit(10)
             .exec()
-    
+
         res.json({
-            ok: true,
             pagina,
             phones
         })
@@ -91,27 +373,48 @@ phonesRoutes.get('/popular', async (req: Request, res: Response) => {
     skip = skip * 10;
 
     try {
-        const phones = await Phone.aggregate(
+        await Phone.aggregate(
             [{
                 $project: {
+                    _id:1,
                     marca: 1,
                     modelo: 1,
                     img: 1,
                     fechaLanzamiento: 1,
-                    total: { $subtract: ["$num_positivos", "$num_negativos"] },
+                    camara:1,
+                    pantalla:1,
+                    cpu:1,
+                    ram:1,
+                    almacenamiento:1,
+                    bateria:1,
+                    num_positivos:1,
+                    num_negativos:11,
+                    valoraciones: 1,
+                    total: { $avg: ["$valoraciones.avg_pantalla", "$valoraciones.avg_cpu","$valoraciones.avg_bateria","$valoraciones.avg_aspecto","$valoraciones.avg_camara"] }
+                },
+
+            },
+            {
+                $sort: {
+                    "total":-1
                 }
-            }]
-        )
-            .match({ total: { $lt: 0 } })
-            .sort({ total: -1 })
-            .skip(10)
-            .limit(10)
-            .exec()
-        res.json({
-            ok:true,
-            pagina,
-            phones
-        });
+            },
+            {
+                $skip:skip
+            },
+            {
+                $limit:10
+            }
+            
+
+            ], function (err: any, phones: any) {
+                if (err) throw err;
+
+                res.json({
+                    pagina,
+                    phones
+                });
+            })
     } catch (err) {
         res.json({
             ok: false,
@@ -120,8 +423,54 @@ phonesRoutes.get('/popular', async (req: Request, res: Response) => {
     }
 
 });
+//NO FUNCIONA
+phonesRoutes.get('/avg/:phoneId', async (req, res) => {
+
+    const phoneId = req.params.phoneId;
+    let pagina = Number(req.query.pagina) || 1;
+    let skip = pagina - 1;
+    skip = skip * 10;
+    // //{$match: { "_id" : "ObjectId('5cd8a21738e3f73e4cedc10c')"}}
+    try {
+        const phones = await Phone.aggregate(
+            [
+                { $match: { _id: ObjectId('5cd8a21738e3f73e4cedc10c') } }
+
+                , {
+                    $project: {
+                        marca: "$marca",
+                        modelo: "$modelo",
+                        pantalla: "$valoraciones.avg_pantalla",
+                        camara: "$valoraciones.avg_camara",
+                        cpu: "$valoraciones.avg_cpu",
+                        bateria: "$valoraciones.avg_bateria",
+                        aspecto: "$valoraciones.avg_aspecto",
+                        sumaAvgs: { $sum: ["$valoraciones.avg_pantalla", "$valoraciones.avg_bateria", "$valoraciones.avg_camara", "$valoraciones.avg_cpu", "$valoraciones.avg_aspecto"] }
+
+                    }
+                }
+
+                , { $group: { _id: { _id: "$_id" }, avgTotal: { $avg: "$sumaAvgs" } } }
 
 
+            ], function (err: any, phones: any) {
+                if (err) throw err;
+
+                res.json({
+                    ok:true,
+                    pagina,
+                    phones
+                });
+            });
+
+    } catch (err) {
+        res.json({
+            ok: false,
+            message: err
+        });
+    }
+
+});
 
 
 //Crear moviles
@@ -145,7 +494,7 @@ phonesRoutes.post('/', [verificaToken], (req: Request, res: Response) => {
     })
 });
 
-//Specific phone
+//Buscar movil por Id
 phonesRoutes.get('/:phoneId', async (req, res) => {
 
     try {
@@ -160,7 +509,7 @@ phonesRoutes.get('/:phoneId', async (req, res) => {
 
 });
 //Buscar por Marca
-phonesRoutes.post('/buscar/marca', async (req, res) => {
+phonesRoutes.post('/buscar/marca',  (req, res) => {
 
     let pagina = Number(req.query.pagina) || 1;
     let skip = pagina - 1;
@@ -169,47 +518,47 @@ phonesRoutes.post('/buscar/marca', async (req, res) => {
     const query = req.body.query;
     Phone.find({
 
-        marca:{
+        marca: {
             $regex: new RegExp(query)
         }
-    }, function ( err, phones) {
-        if (err) throw res.json({ok:false,err,mensaje:"No se encontró ningún resultado"})
+    }, function (err, phones) {
+        if (err) throw res.json({ ok: false, err, mensaje: "No se encontró ningún resultado" })
         res.json({
-            ok:true,
+            ok: true,
             pagina,
             phones
         });
     })
-    .skip(skip)
-    .sort({ marca: -1 })
-    .limit(10);
+        .skip(skip)
+        .sort({ marca: -1 })
+        .limit(10);
 
 });
 
 //Buscar por Modelo
-phonesRoutes.post('/buscar/modelo', async (req, res) => {
+phonesRoutes.post('/buscar/modelo',  (req, res) => {
 
     let pagina = Number(req.query.pagina) || 1;
     let skip = pagina - 1;
     skip = skip * 10;
 
     const query = req.body.query;
-    Phone.find({
+     Phone.find({
 
-        modelo:{
+        modelo: {
             $regex: new RegExp(query)
         }
-    }, function ( err, phones) {
-        if (err) throw res.json({ok:false,err,mensaje:"No se encontró ningún resultado"})
-         res.json({
-            ok:true,
+    }, function (err, phones) {
+        if (err) throw res.json({ ok: false, err, mensaje: "No se encontró ningún resultado" })
+        res.json({
+            ok: true,
             pagina,
             phones
         });
     })
-    .skip(skip)
-    .sort({ marca: -1 })
-    .limit(10);
+        .skip(skip)
+        .sort({ marca: -1 })
+        .limit(10);
 
 
 });
@@ -218,11 +567,11 @@ phonesRoutes.post('/buscar/modelo', async (req, res) => {
 phonesRoutes.delete('/:phoneId', [verificaToken], async (req: Request, res: Response) => {
     const phoneId = req.params.phoneId;
     try {
-        const removedPhone = await Phone.deleteOne({
+        const phone = await Phone.deleteOne({
             _id: phoneId
         });
         await fileSystem.borrarCapetaMovil(phoneId)
-        res.json(removedPhone);
+        res.json(phone);
     } catch (err) {
         res.json({
             ok: false,
@@ -233,9 +582,9 @@ phonesRoutes.delete('/:phoneId', [verificaToken], async (req: Request, res: Resp
 
 //Update a phone
 phonesRoutes.patch('/:phoneId', [verificaToken], async (req: Request, res: Response) => {
-    
+
     try {
-        const updatePhone = await Phone.updateOne({
+        const phone = await Phone.updateOne({
             _id: req.params.phoneId
         }, {
                 $set:
@@ -252,7 +601,7 @@ phonesRoutes.patch('/:phoneId', [verificaToken], async (req: Request, res: Respo
                     fechaLanzamiento: req.body.fechaLanzamiento
                 }
             });
-        res.json(updatePhone);
+        res.json(phone);
     } catch (err) {
         res.json({
             ok: false,
@@ -302,20 +651,21 @@ phonesRoutes.patch('/upload/:phoneId', [verificaToken], async (req: Request, res
     body.img = imagenes;
 
     Phone.updateOne(
-        {_id: phoneId},
-    {
-        $set:
+        { _id: phoneId },
         {
-            img: body.img,
-        }
-    }, (err, phoneUpdated) => {
-        if (err) throw res.json({ok:false,err});
+            $set:
+            {
+                img: body.img,
+            }
+        }, (err, phoneUpdated) => {
+            if (err) throw res.json({ ok: false, err });
 
-        res.json({ 
-            ok: true,
-            phoneUpdated,
-            mensaje:'Imagen guardada en la base de datos' });
-    });
+            res.json({
+                ok: true,
+                phoneUpdated,
+                mensaje: 'Imagen guardada en la base de datos'
+            });
+        });
 })
 
 phonesRoutes.get('/imagen/:phoneId/:img', async (req: any, res: Response) => {
