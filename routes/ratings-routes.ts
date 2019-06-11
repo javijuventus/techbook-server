@@ -67,7 +67,7 @@ ratingsRoutes.get('/:phoneId/:userId', async (req, res) => {
         }).then(phone => {
             res.json(phone);
         }).catch(err => {
-            res.json({votado:false})
+            res.json({err})
             });
 
 
@@ -109,13 +109,11 @@ ratingsRoutes.post('/', [verificaToken], (req: Request, res: Response) => {
         const rating = await ratingsDB.populate('usuario').populate('phone').execPopulate();
 
         if (positivo) {
-            console.log('POSITIVO')
             await Phone.update(
                 { _id: newRating.phone },
                 { $inc: { num_positivos: 1 } }
             )
         }else if (negativo) {
-            console.log('NEGATIVO')
             await Phone.update(
                 { _id: newRating.phone },
                 { $inc: { num_negativos: 1 } }
@@ -310,10 +308,11 @@ ratingsRoutes.delete('/:ratingsId', [verificaToken], async (req: Request, res: R
 });
 
 //Update a ratings
-ratingsRoutes.patch('/:ratingsId', [verificaToken], async (req: Request, res: Response) => {
+ratingsRoutes.post('/update', [verificaToken], async (req: Request, res: Response) => {
 
     const newRating = {
         post: req.body.post,
+        _id: req.body._id,
         positivo: req.body.positivo,
         negativo: req.body.negativo,
         val_pantalla: req.body.val_pantalla,
@@ -322,24 +321,26 @@ ratingsRoutes.patch('/:ratingsId', [verificaToken], async (req: Request, res: Re
         val_camara: req.body.val_camara,
         val_bateria: req.body.val_bateria
     };
-    const updatedRatings = await Ratings.findByIdAndUpdate(req.params.ratingsId,
-        newRating, { new: true }, (err, ratingDB) => {
-            if (err) throw err;
 
-            if (!ratingDB) {
-                return res.json({
-                    ok: false,
-                    mensaje: 'No existe un comentario con ese ID'
-                });
-            }
+    Ratings.findOneAndUpdate({ "_id": newRating._id },
+    { $set: newRating  }, { new: true }, (err, phoneDB) => {
+        if (err) throw err;
 
-            res.json({
-                ok: true,
-                rating: ratingDB
+        if (!phoneDB) {
+            return res.json({
+                ok: false,
+                mensaje: 'No existe un movil con ese ID'
             });
+        }
 
+        res.json({
+            ok: true,
+            phone: phoneDB
         });
+
+    });
 });
+
 
 
 export default ratingsRoutes;

@@ -121,7 +121,7 @@ ratingsRoutes.get('/:phoneId/:userId', function (req, res) { return __awaiter(_t
                     }).then(function (phone) {
                         res.json(phone);
                     }).catch(function (err) {
-                        res.json({ votado: false });
+                        res.json({ err: err });
                     })];
             case 1:
                 ratings = _a.sent();
@@ -175,14 +175,12 @@ ratingsRoutes.post('/', [autenticacion_1.verificaToken], function (req, res) {
                 case 1:
                     rating = _a.sent();
                     if (!positivo) return [3 /*break*/, 3];
-                    console.log('POSITIVO');
                     return [4 /*yield*/, phones_model_1.Phone.update({ _id: newRating.phone }, { $inc: { num_positivos: 1 } })];
                 case 2:
                     _a.sent();
                     return [3 /*break*/, 5];
                 case 3:
                     if (!negativo) return [3 /*break*/, 5];
-                    console.log('NEGATIVO');
                     return [4 /*yield*/, phones_model_1.Phone.update({ _id: newRating.phone }, { $inc: { num_negativos: 1 } })];
                 case 4:
                     _a.sent();
@@ -398,39 +396,36 @@ ratingsRoutes.delete('/:ratingsId', [autenticacion_1.verificaToken], function (r
     });
 }); });
 //Update a ratings
-ratingsRoutes.patch('/:ratingsId', [autenticacion_1.verificaToken], function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-    var newRating, updatedRatings;
+ratingsRoutes.post('/update', [autenticacion_1.verificaToken], function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+    var newRating;
     return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                newRating = {
-                    post: req.body.post,
-                    positivo: req.body.positivo,
-                    negativo: req.body.negativo,
-                    val_pantalla: req.body.val_pantalla,
-                    val_cpu: req.body.val_cpu,
-                    val_aspecto: req.body.val_aspecto,
-                    val_camara: req.body.val_camara,
-                    val_bateria: req.body.val_bateria
-                };
-                return [4 /*yield*/, ratings_model_1.Ratings.findByIdAndUpdate(req.params.ratingsId, newRating, { new: true }, function (err, ratingDB) {
-                        if (err)
-                            throw err;
-                        if (!ratingDB) {
-                            return res.json({
-                                ok: false,
-                                mensaje: 'No existe un comentario con ese ID'
-                            });
-                        }
-                        res.json({
-                            ok: true,
-                            rating: ratingDB
-                        });
-                    })];
-            case 1:
-                updatedRatings = _a.sent();
-                return [2 /*return*/];
-        }
+        newRating = {
+            post: req.body.post,
+            _id: req.body._id,
+            positivo: req.body.positivo,
+            negativo: req.body.negativo,
+            val_pantalla: req.body.val_pantalla,
+            val_cpu: req.body.val_cpu,
+            val_aspecto: req.body.val_aspecto,
+            val_camara: req.body.val_camara,
+            val_bateria: req.body.val_bateria
+        };
+        console.log('Ha llegado aqui');
+        ratings_model_1.Ratings.findOneAndUpdate({ "_id": newRating._id }, { $set: newRating }, { new: true }, function (err, phoneDB) {
+            if (err)
+                throw err;
+            if (!phoneDB) {
+                return res.json({
+                    ok: false,
+                    mensaje: 'No existe un movil con ese ID'
+                });
+            }
+            res.json({
+                ok: true,
+                phone: phoneDB
+            });
+        });
+        return [2 /*return*/];
     });
 }); });
 exports.default = ratingsRoutes;
