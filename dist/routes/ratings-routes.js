@@ -108,17 +108,23 @@ ratingsRoutes.get('/phone/:phoneId', function (req, res) { return __awaiter(_thi
         }
     });
 }); });
-//Obtener rating por Id
-ratingsRoutes.get('/id/:ratingId', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-    var rating, err_2;
+//Trae un rating determinado de un usuario
+ratingsRoutes.get('/:phoneId/:userId', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+    var ratings, err_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, ratings_model_1.Ratings.findById(req.params.ratingId)];
+                return [4 /*yield*/, ratings_model_1.Ratings.findOne({
+                        usuario: { _id: req.params.userId },
+                        phone: { _id: req.params.phoneId }
+                    }).then(function (phone) {
+                        res.json(phone);
+                    }).catch(function (err) {
+                        res.json({ votado: false });
+                    })];
             case 1:
-                rating = _a.sent();
-                res.json(rating);
+                ratings = _a.sent();
                 return [3 /*break*/, 3];
             case 2:
                 err_2 = _a.sent();
@@ -131,14 +137,37 @@ ratingsRoutes.get('/id/:ratingId', function (req, res) { return __awaiter(_this,
         }
     });
 }); });
+//Obtener rating por Id
+ratingsRoutes.get('/id/:ratingId', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+    var rating, err_3;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, ratings_model_1.Ratings.findById(req.params.ratingId)];
+            case 1:
+                rating = _a.sent();
+                res.json(rating);
+                return [3 /*break*/, 3];
+            case 2:
+                err_3 = _a.sent();
+                res.json({
+                    ok: false,
+                    message: err_3
+                });
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
+        }
+    });
+}); });
 //Crear ratings
 ratingsRoutes.post('/', [autenticacion_1.verificaToken], function (req, res) {
-    var body = req.body;
-    body.usuario = req.usuario._id;
-    body.phone = req.body.phone;
-    var positivo = body.positivo;
-    var negativo = body.negativo;
-    ratings_model_1.Ratings.create(body).then(function (ratingsDB) { return __awaiter(_this, void 0, void 0, function () {
+    var user = req.usuario;
+    var newRating = req.body;
+    newRating.usuario = user.usuario._id;
+    var positivo = newRating.positivo;
+    var negativo = newRating.negativo;
+    ratings_model_1.Ratings.create(newRating).then(function (ratingsDB) { return __awaiter(_this, void 0, void 0, function () {
         var rating;
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -146,16 +175,19 @@ ratingsRoutes.post('/', [autenticacion_1.verificaToken], function (req, res) {
                 case 1:
                     rating = _a.sent();
                     if (!positivo) return [3 /*break*/, 3];
-                    return [4 /*yield*/, phones_model_1.Phone.update({ _id: body.phone }, { $inc: { num_positivos: 1 } })];
+                    console.log('POSITIVO');
+                    return [4 /*yield*/, phones_model_1.Phone.update({ _id: newRating.phone }, { $inc: { num_positivos: 1 } })];
                 case 2:
                     _a.sent();
-                    return [3 /*break*/, 4];
+                    return [3 /*break*/, 5];
                 case 3:
-                    if (negativo) {
-                        phones_model_1.Phone.update({ _id: body.phone }, { $inc: { num_negativos: 1 } });
-                    }
-                    _a.label = 4;
+                    if (!negativo) return [3 /*break*/, 5];
+                    console.log('NEGATIVO');
+                    return [4 /*yield*/, phones_model_1.Phone.update({ _id: newRating.phone }, { $inc: { num_negativos: 1 } })];
                 case 4:
+                    _a.sent();
+                    _a.label = 5;
+                case 5:
                     res.json({
                         ok: true,
                         rating: rating
@@ -342,7 +374,7 @@ ratingsRoutes.get('/pantalla/:phoneId', function (req, res) { return __awaiter(_
 }); });
 //Delete ratings
 ratingsRoutes.delete('/:ratingsId', [autenticacion_1.verificaToken], function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-    var removedRatings, err_3;
+    var removedRatings, err_4;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -355,10 +387,10 @@ ratingsRoutes.delete('/:ratingsId', [autenticacion_1.verificaToken], function (r
                 res.json(removedRatings);
                 return [3 /*break*/, 3];
             case 2:
-                err_3 = _a.sent();
+                err_4 = _a.sent();
                 res.json({
                     ok: false,
-                    message: err_3
+                    message: err_4
                 });
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];

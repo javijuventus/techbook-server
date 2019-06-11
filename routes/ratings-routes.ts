@@ -57,6 +57,28 @@ ratingsRoutes.get('/phone/:phoneId', async (req, res) => {
     }
 
 });
+//Trae un rating determinado de un usuario
+ratingsRoutes.get('/:phoneId/:userId', async (req, res) => {
+
+    try {
+        const ratings = await Ratings.findOne({
+            usuario: {_id: req.params.userId},
+            phone: { _id: req.params.phoneId }
+        }).then(phone => {
+            res.json(phone);
+        }).catch(err => {
+            res.json({votado:false})
+            });
+
+
+    } catch (err) {
+        res.json({
+            ok: false,
+            message: err
+        });
+    }
+
+});
 //Obtener rating por Id
 ratingsRoutes.get('/id/:ratingId', async (req, res) => {
 
@@ -74,25 +96,28 @@ ratingsRoutes.get('/id/:ratingId', async (req, res) => {
 //Crear ratings
 ratingsRoutes.post('/', [verificaToken], (req: Request, res: Response) => {
 
-    const body = req.body;
-    body.usuario = req.usuario._id;
-    body.phone = req.body.phone;
-    const positivo = body.positivo;
-    const negativo = body.negativo;
+    const user = req.usuario;
+    const newRating = req.body;
+    newRating.usuario = user.usuario._id;
+
+    const positivo = newRating.positivo;
+    const negativo = newRating.negativo;
 
 
-    Ratings.create(body).then(async ratingsDB => {
+    Ratings.create(newRating).then(async ratingsDB => {
 
         const rating = await ratingsDB.populate('usuario').populate('phone').execPopulate();
 
         if (positivo) {
+            console.log('POSITIVO')
             await Phone.update(
-                { _id: body.phone },
+                { _id: newRating.phone },
                 { $inc: { num_positivos: 1 } }
             )
-        } else if (negativo) {
-            Phone.update(
-                { _id: body.phone },
+        }else if (negativo) {
+            console.log('NEGATIVO')
+            await Phone.update(
+                { _id: newRating.phone },
                 { $inc: { num_negativos: 1 } }
             )
         }
@@ -117,9 +142,9 @@ ratingsRoutes.get('/camara/:phoneId', async (req: Request, res: Response) => {
         { $group: { _id: { _id: "$phone" }, average: { $avg: '$val_camara' } } }
     ], function (err: any, result: any) {
         if (err) throw err;
-        
-        Phone.findOneAndUpdate({ "_id" : phoneId},
-            { $set: { "valoraciones.avg_camara" : Math.round(result[0].average) } },{new: true}, (err, phoneDB) => {
+
+        Phone.findOneAndUpdate({ "_id": phoneId },
+            { $set: { "valoraciones.avg_camara": Math.round(result[0].average) } }, { new: true }, (err, phoneDB) => {
                 if (err) throw err;
 
                 if (!phoneDB) {
@@ -147,11 +172,11 @@ ratingsRoutes.get('/aspecto/:phoneId', async (req: Request, res: Response) => {
     await Ratings.aggregate([
         { $match: { phone: ObjectId(`${phoneId}`) } },
         { $group: { _id: null, average: { $avg: '$val_aspecto' } } }
-        
+
     ], function (err: any, result: any) {
         if (err) throw err;
-        Phone.findOneAndUpdate({ "_id" : phoneId},
-            { $set: { "valoraciones.avg_aspecto" : Math.round(result[0].average) } },{new: true}, (err, phoneDB) => {
+        Phone.findOneAndUpdate({ "_id": phoneId },
+            { $set: { "valoraciones.avg_aspecto": Math.round(result[0].average) } }, { new: true }, (err, phoneDB) => {
                 if (err) throw err;
 
                 if (!phoneDB) {
@@ -181,8 +206,8 @@ ratingsRoutes.get('/cpu/:phoneId', async (req: Request, res: Response) => {
         { $group: { _id: null, average: { $avg: '$val_cpu' } } }
     ], function (err: any, result: any) {
         if (err) throw err;
-        Phone.findOneAndUpdate({ "_id" : phoneId},
-        { $set: { "valoraciones.avg_cpu" : Math.round(result[0].average) } },{new: true}, (err, phoneDB) => {
+        Phone.findOneAndUpdate({ "_id": phoneId },
+            { $set: { "valoraciones.avg_cpu": Math.round(result[0].average) } }, { new: true }, (err, phoneDB) => {
                 if (err) throw err;
 
                 if (!phoneDB) {
@@ -212,8 +237,8 @@ ratingsRoutes.get('/bateria/:phoneId', async (req: Request, res: Response) => {
         { $group: { _id: null, average: { $avg: '$val_bateria' } } }
     ], function (err: any, result: any) {
         if (err) throw err;
-        Phone.findOneAndUpdate({ "_id" : phoneId},
-        { $set: { "valoraciones.avg_bateria" : Math.round(result[0].average) } },{new: true}, (err, phoneDB) => {
+        Phone.findOneAndUpdate({ "_id": phoneId },
+            { $set: { "valoraciones.avg_bateria": Math.round(result[0].average) } }, { new: true }, (err, phoneDB) => {
                 if (err) throw err;
 
                 if (!phoneDB) {
@@ -245,8 +270,8 @@ ratingsRoutes.get('/pantalla/:phoneId', async (req: Request, res: Response) => {
         { $group: { _id: null, average: { $avg: '$val_pantalla' } } }
     ], function (err: any, result: any) {
         if (err) throw err;
-        Phone.findOneAndUpdate({ "_id" : phoneId},
-            { $set: { "valoraciones.avg_pantalla" : Math.round(result[0].average) } },{new: true}, (err, phoneDB) => {
+        Phone.findOneAndUpdate({ "_id": phoneId },
+            { $set: { "valoraciones.avg_pantalla": Math.round(result[0].average) } }, { new: true }, (err, phoneDB) => {
                 if (err) throw err;
 
                 if (!phoneDB) {
