@@ -3,11 +3,12 @@ import { verificaToken } from '../middlewares/autenticacion';
 import { Ratings } from '../models/ratings.model';
 import mongoose from 'mongoose';
 import { Phone } from '../models/phones.model';
-import phonesRoutes from "./phone-routes";
+import bodyParser from 'body-parser';
+import RatingsUpdate from '../classes/rating';
 const ObjectId = mongoose.Types.ObjectId;
 
-
 const ratingsRoutes = Router();
+const ratingsUpdate = new RatingsUpdate();
 
 //Obtener todos los ratings
 ratingsRoutes.get('/', async (req: Request, res: Response) => {
@@ -106,24 +107,30 @@ ratingsRoutes.post('/', [verificaToken], (req: Request, res: Response) => {
 
     Ratings.create(newRating).then(async ratingsDB => {
 
-        const rating = await ratingsDB.populate('usuario').populate('phone').execPopulate();
+         await ratingsDB.populate('usuario').populate('phone').execPopulate().then( async newRating => {
 
-        if (positivo) {
-            await Phone.update(
-                { _id: newRating.phone },
-                { $inc: { num_positivos: 1 } }
-            )
-        }else if (negativo) {
-            await Phone.update(
-                { _id: newRating.phone },
-                { $inc: { num_negativos: 1 } }
-            )
-        }
+            if (positivo) {
+                await Phone.update(
+                    { _id: newRating.phone },
+                    { $inc: { num_positivos: 1 } }
+                )
+            }else if (negativo) {
+                await Phone.update(
+                    { _id: newRating.phone },
+                    { $inc: { num_negativos: 1 } }
+                )
+            }
+    
+            res.status(200).json({
+                ok: true,
+                newRating
+            });
 
-        res.json({
-            ok: true,
-            rating
-        });
+         }).catch(err => {
+             res.status(400).json(err);
+         });
+
+       
 
 
 
@@ -132,162 +139,118 @@ ratingsRoutes.post('/', [verificaToken], (req: Request, res: Response) => {
 });
 
 //Obtener phones top camra
-ratingsRoutes.get('/camara/:phoneId', async (req: Request, res: Response) => {
+ratingsRoutes.get('/avg/camara/:phoneId/', async (req: Request, res: Response) => {
 
     const phoneId = req.params.phoneId;
+    console.log(phoneId);
     await Ratings.aggregate([
         { $match: { phone: ObjectId(`${phoneId}`) } },
         { $group: { _id: { _id: "$phone" }, average: { $avg: '$val_camara' } } }
     ], function (err: any, result: any) {
+        let media = result[0].average;
         if (err) throw err;
 
-        Phone.findOneAndUpdate({ "_id": phoneId },
-            { $set: { "valoraciones.avg_camara": Math.round(result[0].average) } }, { new: true }, (err, phoneDB) => {
-                if (err) throw err;
-
-                if (!phoneDB) {
-                    return res.json({
-                        ok: false,
-                        mensaje: 'No existe un movil con ese ID'
-                    });
-                }
-
-                res.json({
-                    ok: true,
-                    result,
-                    phone: phoneDB
-                });
-
-            });
+        if( result[0].average !== undefined){
+             ratingsUpdate.actualizarRatingCamara(phoneId, media);
+        }
+        res.json({
+            ok: true,
+            result,
+        });
+        
     });
 
 });
 
 //Obtener phones top diseño
-ratingsRoutes.get('/aspecto/:phoneId', async (req: Request, res: Response) => {
+ratingsRoutes.get('/avg/aspecto/:phoneId/', async (req: Request, res: Response) => {
 
     const phoneId = req.params.phoneId;
+    console.log(phoneId);
     await Ratings.aggregate([
         { $match: { phone: ObjectId(`${phoneId}`) } },
-        { $group: { _id: null, average: { $avg: '$val_aspecto' } } }
-
+        { $group: { _id: { _id: "$phone" }, average: { $avg: '$val_aspecto' } } }
     ], function (err: any, result: any) {
+        let media = result[0].average;
         if (err) throw err;
-        Phone.findOneAndUpdate({ "_id": phoneId },
-            { $set: { "valoraciones.avg_aspecto": Math.round(result[0].average) } }, { new: true }, (err, phoneDB) => {
-                if (err) throw err;
 
-                if (!phoneDB) {
-                    return res.json({
-                        ok: false,
-                        mensaje: 'No existe un movil con ese ID'
-                    });
-                }
-
-                res.json({
-                    ok: true,
-                    result,
-                    phone: phoneDB
-                });
-
-            });
+        if( result[0].average !== undefined){
+             ratingsUpdate.actualizarRatingAspecto(phoneId, media);
+        }
+        res.json({
+            ok: true,
+            result,
+        });
+        
     });
 
 });
 
 //Obtener phones top cpu
-ratingsRoutes.get('/cpu/:phoneId', async (req: Request, res: Response) => {
+ratingsRoutes.get('/avg/cpu/:phoneId/', async (req: Request, res: Response) => {
 
     const phoneId = req.params.phoneId;
+    console.log(phoneId);
     await Ratings.aggregate([
         { $match: { phone: ObjectId(`${phoneId}`) } },
-        { $group: { _id: null, average: { $avg: '$val_cpu' } } }
+        { $group: { _id: { _id: "$phone" }, average: { $avg: '$val_cpu' } } }
     ], function (err: any, result: any) {
+        let media = result[0].average;
         if (err) throw err;
-        Phone.findOneAndUpdate({ "_id": phoneId },
-            { $set: { "valoraciones.avg_cpu": Math.round(result[0].average) } }, { new: true }, (err, phoneDB) => {
-                if (err) throw err;
 
-                if (!phoneDB) {
-                    return res.json({
-                        ok: false,
-                        mensaje: 'No existe un movil con ese ID'
-                    });
-                }
-
-                res.json({
-                    ok: true,
-                    result,
-                    phone: phoneDB
-                });
-
-            });
+        if( result[0].average !== undefined){
+             ratingsUpdate.actualizarRatingCpu(phoneId, media);
+        }
+        res.json({
+            ok: true,
+            result,
+        });
+        
     });
 
 });
-
-//Obtener phones top bateria
-ratingsRoutes.get('/bateria/:phoneId', async (req: Request, res: Response) => {
+ratingsRoutes.get('/avg/pantalla/:phoneId/', async (req: Request, res: Response) => {
 
     const phoneId = req.params.phoneId;
+    console.log(phoneId);
     await Ratings.aggregate([
         { $match: { phone: ObjectId(`${phoneId}`) } },
-        { $group: { _id: null, average: { $avg: '$val_bateria' } } }
+        { $group: { _id: { _id: "$phone" }, average: { $avg: '$val_pantalla' } } }
     ], function (err: any, result: any) {
+        let media = result[0].average;
         if (err) throw err;
-        Phone.findOneAndUpdate({ "_id": phoneId },
-            { $set: { "valoraciones.avg_bateria": Math.round(result[0].average) } }, { new: true }, (err, phoneDB) => {
-                if (err) throw err;
 
-                if (!phoneDB) {
-                    return res.json({
-                        ok: false,
-                        mensaje: 'No existe un movil con ese ID'
-                    });
-                }
-
-                res.json({
-                    ok: true,
-                    result,
-                    phone: phoneDB
-                });
-
-            });
+        if( result[0].average !== undefined){
+             ratingsUpdate.actualizarRatingPantalla(phoneId, media);
+        }
+        res.json({
+            ok: true,
+            result,
+        });
+        
     });
-
 
 });
-
-//Obtener media ratings de pantalla y modificar media de ratings de pantalla en phone
-ratingsRoutes.get('/pantalla/:phoneId', async (req: Request, res: Response) => {
-
+ratingsRoutes.get('/avg/bateria/:phoneId/', async (req: Request, res: Response) => {
 
     const phoneId = req.params.phoneId;
+    console.log(phoneId);
     await Ratings.aggregate([
         { $match: { phone: ObjectId(`${phoneId}`) } },
-        { $group: { _id: null, average: { $avg: '$val_pantalla' } } }
+        { $group: { _id: { _id: "$phone" }, average: { $avg: '$val_bateria' } } }
     ], function (err: any, result: any) {
+        let media = result[0].average;
         if (err) throw err;
-        Phone.findOneAndUpdate({ "_id": phoneId },
-            { $set: { "valoraciones.avg_pantalla": Math.round(result[0].average) } }, { new: true }, (err, phoneDB) => {
-                if (err) throw err;
 
-                if (!phoneDB) {
-                    return res.json({
-                        ok: false,
-                        mensaje: 'No existe un movil con ese ID'
-                    });
-                }
-
-                res.json({
-                    ok: true,
-                    result,
-                    phone: phoneDB
-                });
-
-            });
+        if( result[0].average !== undefined){
+             ratingsUpdate.actualizarRatingBateria(phoneId, media);
+        }
+        res.json({
+            ok: true,
+            result,
+        });
+        
     });
-
 
 });
 
@@ -340,7 +303,5 @@ ratingsRoutes.post('/update', [verificaToken], async (req: Request, res: Respons
 
     });
 });
-
-
 
 export default ratingsRoutes;
